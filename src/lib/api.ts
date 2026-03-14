@@ -20,8 +20,23 @@ export interface Preset {
   view_count: number
   is_approved: boolean
   is_featured: boolean
+
+
+  previewGif?: string  // alias for preview_gif_url
+  fileName?: string    // alias for file_name
+  aeVersion?: string   // alias for ae_version
 }
 
+export const categories = [
+  { id: 'all', name: 'all presets' },
+  { id: 'textAnims', name: 'text animations' },
+  { id: 'transitions', name: 'transitions' },
+  { id: 'shapeAnims', name: 'shape animations' },
+  { id: 'effects', name: 'effects' },
+  { id: 'backgrounds', name: 'backgrounds' },
+  { id: 'scripts', name: 'scripts' },
+  { id: 'compositions', name: 'compositions' },
+]
 
 export async function fetchPresets(): Promise<Preset[]> {
     const {data, error} = await supabase
@@ -35,5 +50,10 @@ export async function fetchPresets(): Promise<Preset[]> {
     return []
   }
 
-  return data || []
+   return (data || []).map(preset => ({
+    ...preset,
+    previewGif: preset.preview_gif_url,  // add alias
+    fileName: preset.file_name,           // add alias
+    aeVersion: preset.ae_version,         // add alias
+  }))
 }
