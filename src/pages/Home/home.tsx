@@ -1,4 +1,4 @@
-import './home'
+import './Home.css'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Input } from "@/components/ui/input"
@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { fetchPresets, categories, type Preset } from '@/lib/api'
-import SplitText from '@/component/SplitText'
+import SplitText from '@/components/SplitText'
 import FadeContent from '@/components/FadeContent'
 
 export default function Home() {
