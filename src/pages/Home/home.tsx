@@ -6,6 +6,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { fetchPresets, categories, type Preset } from '@/lib/api'
+import SplitText from '@/component/SplitText'
+import FadeContent from '@/components/FadeContent'
 
 export default function Home() {
   const [presets, setPresets] = useState<Preset[]>([])
@@ -42,6 +44,10 @@ export default function Home() {
       setIsRefreshing(false)
     }
   }
+  
+  const handleAnimationComplete = () => {
+  console.log('All letters have animated!');
+};
 
   const filteredPresets = presets.filter(preset => {
     const matchesCategory = selectedCategory === 'all' || preset.category === selectedCategory
@@ -57,9 +63,24 @@ export default function Home() {
 
   return(
 
-        <div className="home-page-wrapper">
+    <div className="home-page-wrapper">
       <div className="home-header">
-        <h1 className="home-title">preset browser</h1>
+        <div className="title-container">
+          <SplitText
+            text="preset browser"
+            className="home-title"
+            delay={20}
+            duration={1.5}
+            ease="elastic.out(1, 0.3)"
+            splitType="chars"
+            from={{ opacity: 0, y: 5 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.1}
+            rootMargin="-100px"
+            textAlign="center"
+            onLetterAnimationComplete={handleAnimationComplete}
+          />
+        </div>
         <div className="search-container">
           <Search className="search-icon" />
           <Input
@@ -82,6 +103,7 @@ export default function Home() {
       </div>
 
       <div className="home-content-layout">
+        {/* categories sidebar */}
         <aside className="categories-sidebar">
           <h2 className="sidebar-title">categories</h2>
           <ScrollArea className="categories-scroll">
@@ -99,45 +121,44 @@ export default function Home() {
           </ScrollArea>
         </aside>
 
-        <main className="presets-main">
-          <ScrollArea className="presets-scroll">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <p className="text-muted-foreground">loading presets...</p>
-              </div>
-            ) : filteredPresets.length === 0 ? (
-              <div className="flex items-center justify-center h-64">
-                <p className="text-muted-foreground">no presets found</p>
-              </div>
-            ) : (
-              <div className="presets-grid">
-                {filteredPresets.map((preset) => (
-                  <div 
-                    key={preset.id} 
-                    className="preset-card"
-                    onClick={() => handlePresetClick(preset.id)}
-                  >
-                    <div className="preset-preview">
-                      {preset.previewGif ? (
+        {/* presets grid */}
+        <FadeContent blur={false} duration={1000} easing="power2.out" initialOpacity={0} className='presets-main'>
+          <main className="presets-main">
+            <ScrollArea className="presets-scroll">
+              {isLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <p className="text-muted-foreground">loading presets...</p>
+                </div>
+              ) : filteredPresets.length === 0 ? (
+                <div className="flex items-center justify-center h-64">
+                  <p className="text-muted-foreground">no presets found</p>
+                </div>
+              ) : (
+                <div className="presets-grid">
+                  {filteredPresets.map((preset) => (
+                    <div 
+                      key={preset.id} 
+                      className="preset-card"
+                      onClick={() => handlePresetClick(preset.id)}
+                    >
+                      <div className="preset-preview">
                         <img 
                           src={preset.previewGif} 
                           alt={preset.name}
                           loading="lazy"
                         />
-                      ) : (
-                        <div className="preview-placeholder">No Preview</div>
-                      )}
+                      </div>
+                      <div className="preset-info">
+                        <h3 className="preset-name">{preset.name}</h3>
+                        <p className="preset-description">{preset.description}</p>
+                      </div>
                     </div>
-                    <div className="preset-info">
-                      <h3 className="preset-name">{preset.name}</h3>
-                      <p className="preset-description">{preset.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </ScrollArea>
-        </main>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </main>
+        </FadeContent>
       </div>
     </div>
   )
