@@ -1,7 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom'
 import Upload from './pages/Upload/Upload'
 import Auth from './pages/Auth/Auth'
-import Home from './pages/Home/home'
+import Home from './pages/Home/Home'
+import PresetDetail from './pages/PresetDetail/PresetDetail'
 
 export const router = createBrowserRouter([
   {
@@ -15,5 +16,9 @@ export const router = createBrowserRouter([
   {
     path: '/auth',
     element: <Auth />
-  }
+  },
+  {
+    path: 'preset/:id',
+    element: <PresetDetail />,
+  },
 ])
