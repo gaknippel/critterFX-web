@@ -6,8 +6,7 @@ import { Progress } from '@/components/ui/progress'
 import { useState, useEffect } from 'react'
 import { toast } from "sonner"
 import './PresetDetail.css'
-import { fetchPresets, type Preset } from '@/data/presets'
-import { categories } from '@/data/presets'
+import { fetchPresets, categories, type Preset } from '@/lib/api'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog"
 import SplitText from '@/components/SplitText'
 
@@ -15,8 +14,6 @@ export default function PresetDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [preset, setPreset] = useState<Preset | null>(null)
-  const [isInstalling, setIsInstalling] = useState(false)
-  const [downloadProgress, setDownloadProgress] = useState<DownloadProgress | null>(null)
   
 
   // load preset data
@@ -26,7 +23,7 @@ export default function PresetDetail() {
 
   const loadPreset = async () => {
     const presets = await fetchPresets()
-    const found = presets.find(p => p.id === parseInt(id || '0'))
+    const found = presets.find(p => p.id)
     setPreset(found || null)
 
     window.scrollTo(0, 0)
@@ -46,40 +43,7 @@ export default function PresetDetail() {
     )
   }
 
-  const handleDownload = async () => {
-    setIsInstalling(true)
-    setDownloadProgress({ downloaded: 0, total: 100, percentage: 0 })
 
-    try 
-    {
-      const result = await downloadAndInstall(
-        preset,
-        (progress) => setDownloadProgress(progress)
-      )
-
-      if (result.success) 
-      {
-        toast.success("success!", {
-          description: result.message,
-        })
-      } 
-      else 
-      {
-        toast.error("installation failed", {
-          description: result.message,
-        })
-      }
-    } 
-    catch (error) 
-    {
-      toast.error("error", {
-        description: `failed to install preset: ${error}`,
-      })
-    } finally {
-      setIsInstalling(false)
-      setDownloadProgress(null)
-    }
-  }
 const handleAnimationComplete = () => {
   console.log('All letters have animated!');
 };
@@ -108,27 +72,39 @@ const handleAnimationComplete = () => {
             />
           </div>
           
-          {/* download progress */}
-          {downloadProgress && (
-            <div className="mb-4">
-              <Progress value={downloadProgress.percentage} />
-              <p className="text-sm text-center mt-2 text-muted-foreground">
-                {downloadProgress.percentage}% - downloading...
-              </p>
-            </div>
-          )}
 
-          <Button 
-            className="download-button" 
-            size="lg"
-            onClick={handleDownload}
-            disabled={isInstalling}
-          >
-            <Download className="mr-2" />
-            {isInstalling ? 'Installing...' : 'install to AE'}
-          </Button>
+
+              <Dialog>
+              <DialogTrigger asChild>
+                <Button className="download-button" size="lg">
+                  <Download className="mr-2" />
+                  install to AE
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>get critterFX desktop!</DialogTitle>
+                  <DialogDescription>
+                    install presets directly into after effects with one click :D.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="bg-muted p-4 rounded-lg flex items-center justify-between gap-4">
+                  <p className="text-sm text-muted-foreground">
+                     download the critterFX desktop app to install presets.
+                  </p>
+                  <Button asChild size="sm">
+                    <a href="https://github.com/gaknippel/critterFX/releases" target="_blank" rel="noopener noreferrer">
+                      download app
+                    </a>
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+
+
             {/*only appears for composition presets (.aep files!) */}
-            {preset.fileName.endsWith('.aep') && (
+            {preset.file_name.endsWith('.aep') && (
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="lg" className="w-full mt-4">
@@ -206,7 +182,7 @@ const handleAnimationComplete = () => {
               <Info size={20} />
               <h2>description</h2>
             </div>
-            <p className="detail-text">{preset.longDescription || preset.description}</p>
+            <p className="detail-text">{preset.long_description || preset.description}</p>
           </div>
 
           <div className="detail-section">
@@ -221,11 +197,11 @@ const handleAnimationComplete = () => {
               </div>
               <div className="tech-info-item">
                 <span className="tech-label">file size:</span>
-                <span className="tech-value">{preset.fileSize || 'N/A'}</span>
+                <span className="tech-value">{preset.file_size || 'N/A'}</span>
               </div>
               <div className="tech-info-item">
                 <span className="tech-label">author:</span>
-                <span className="tech-value">{preset.author || 'Unknown'}</span>
+                <span className="tech-value">{preset.author_name || 'Unknown'}</span>
               </div>
             </div>
           </div>
