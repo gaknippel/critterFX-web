@@ -3,22 +3,29 @@ import Upload from './pages/Upload/Upload'
 import Auth from './pages/Auth/Auth'
 import Home from './pages/Home/Home'
 import PresetDetail from './pages/PresetDetail/PresetDetail'
+import { Layout } from './components/Layout'
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />
-  },
-  {
-    path: '/upload',
-    element: <Upload />
-  },
-  {
-    path: '/auth',
-    element: <Auth />
-  },
-  {
-    path: 'preset/:id',
-    element: <PresetDetail />,
-  },
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Home />
+      },
+      {
+        path: 'upload',
+        element: <Upload />
+      },
+      {
+        path: 'auth',
+        element: <Auth />
+      },
+      {
+        path: 'preset/:id',
+        element: <PresetDetail />,
+      },
+    ]
+  }
 ])
