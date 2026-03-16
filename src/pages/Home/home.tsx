@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Search, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from '@/components/ui/skeleton'
 import { fetchPresets, categories, type Preset } from '@/lib/api'
 import SplitText from '@/components/SplitText'
 import FadeContent from '@/components/FadeContent'
+
 
 export default function Home() {
   const [presets, setPresets] = useState<Preset[]>([])
@@ -126,13 +128,17 @@ export default function Home() {
           <main className="presets-main">
             <ScrollArea className="presets-scroll">
               {isLoading ? (
-                <div className="flex items-center justify-center h-64">
-                  <p className="text-muted-foreground">loading presets...</p>
+                    <div className="presets-grid">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="preset-card">
+                  <Skeleton className="w-full aspect-video" />
+                  <div className="preset-info">
+                    <Skeleton className="h-5 w-3/4 mb-2" />
+                    <Skeleton className="h-3 w-full" />
+                  </div>
                 </div>
-              ) : filteredPresets.length === 0 ? (
-                <div className="flex items-center justify-center h-64">
-                  <p className="text-muted-foreground">no presets found</p>
-                </div>
+              ))}
+             </div>
               ) : (
                 <div className="presets-grid">
                   {filteredPresets.map((preset) => (
