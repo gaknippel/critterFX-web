@@ -68,14 +68,9 @@ export default function Auth() {
     <div className="auth-page">
     <Card className="auth-card">
       <CardHeader className="auth-header">
-        <div className="auth-icon-container">
-          <div className="auth-icon-wrapper">
-            <Sparkles className="auth-icon" />
-          </div>
-        </div>
         <div className="auth-title-group">
           <CardTitle className="auth-title">
-            {isSignup ? 'create an account' : 'welcome back.'}
+            {isSignup ? 'create an account.' : 'welcome back.'}
           </CardTitle>
           <CardDescription className="auth-description">
             {isSignup ? 'join critterFX!' : 'sign in!'}
