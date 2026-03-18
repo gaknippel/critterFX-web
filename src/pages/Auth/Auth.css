@@ -3,7 +3,6 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #09090b; /* Zinc 950 */
   color: #fafafa;
   position: relative;
   overflow: hidden;
@@ -26,7 +25,6 @@
 .auth-card {
   width: 100%;
   max-width: 400px;
-  background-color: #18181b; /* Zinc 900 */
   border: 1px solid #27272a; /* Zinc 800 */
   border-radius: 0.75rem;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
@@ -50,7 +48,7 @@
 }
 
 .auth-icon-wrapper {
-  background: linear-gradient(135deg, #6366f1, #a855f7);
+  background: linear-gradient(135deg, #6374f1, #2716bc);
   padding: 0.75rem;
   border-radius: 1rem;
   box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
@@ -146,7 +144,7 @@
 .auth-submit-button {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #6366f1, #314ab8);
   color: white;
   border: none;
   border-radius: 0.5rem;
