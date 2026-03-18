@@ -1,0 +1,94 @@
+.navbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+}
+
+.navbar-fade-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8rem; /* Equivalent to tailwind h-32 */
+  pointer-events: none;
+  z-index: -10;
+  background: linear-gradient(to bottom, var(--bg-top) 0%, transparent 100%);
+}
+
+.navbar-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem; /* px-6 py-4 */
+  position: relative;
+  z-index: 10;
+}
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  color: var(--foreground); /* Brand text default color */
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* --- Brand Hover Effects --- */
+.navbar-brand:hover {
+  color: var(--primary); /* Change this to whatever text color you want on hover */
+}
+
+.navbar-brand:hover .navbar-logo-container {
+  /* Change the background box of the logo when hovering over the brand name */
+  background-color: color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.navbar-brand:hover .navbar-logo-icon {
+  /* Change the logo icon color when hovering */
+  fill: var(--primary); 
+}
+
+.navbar-logo-container {
+  background-color: color-mix(in srgb, var(--primary) 20%, transparent);
+  padding: 0.5rem; /* p-2 */
+  border-radius: 0.75rem; /* rounded-xl */
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.navbar-logo-icon {
+  fill: color-mix(in srgb, var(--primary) 40%, transparent);
+  transition: fill 0.2s ease;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem; /* gap-8 */
+  font-weight: 600; /* font-semibold */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.navbar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* gap-2 */
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+/* --- Link Hover Effects --- */
+.navbar-link:hover {
+  color: var(--foreground); /* Text color when hovered */
+  background-color: color-mix(in srgb, var(--foreground) 10%, transparent); /* Adds a subtle background box on hover */
+}
+

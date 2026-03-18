@@ -58,7 +58,7 @@ export default function PresetDetail() {
           <h1>Preset not found</h1>
           <Button onClick={() => navigate('/')}>
             <ArrowLeft className="mr-2" />
-            Back to Browser
+            back to browser
           </Button>
         </div>
       </div>
@@ -173,7 +173,7 @@ export default function PresetDetail() {
 
           <div className="preset-tags">
             {preset.tags?.map((tag, index) => (
-              <Badge key={index} variant="secondary">{tag}</Badge>
+              <Badge key={index} variant="secondary" className="preset-tag">{tag}</Badge>
             ))}
           </div>
 

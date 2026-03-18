@@ -26,6 +26,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  background-color: rgba(55, 80, 188, 0.397);
 }
 
 .preset-detail-content {
@@ -189,6 +190,12 @@
   display: inline-block;
   width: 1rem;
   margin-right: 0.5rem;
+}
+
+
+.preset-tag {
+  background-color: var(--download-button-bg); 
+  color: hsl(var(--foreground)); 
 }
 
 @media (max-width: 1024px) {

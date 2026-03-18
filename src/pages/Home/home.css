@@ -116,12 +116,17 @@
   text-align: left;
   white-space: pre-wrap; 
   word-break: break-word; 
+    border-color: transparent;
+  outline: none;
 }
 
 .category-item:hover {
   background: hsl(var(--accent));
   transform: translateY(-5px);
   font-weight: 800;
+    border-color: transparent;
+  outline: none;
+
 }
 
 .category-item.active {
@@ -129,6 +134,8 @@
   color: hsl(var(--primary-foreground));
   font-weight: 900;
   font-size: 1.0rem;
+    border-color: transparent;
+  outline: none;
 }
 
 .presets-main {
