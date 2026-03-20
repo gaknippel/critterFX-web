@@ -70,7 +70,7 @@ export default function Auth() {
       <CardHeader className="auth-header">
         <div className="auth-title-group">
           <CardTitle className="auth-title">
-            {isSignup ? 'create an account.' : 'welcome back.'}
+            {isSignup ? 'create an account.' : 'welcome back!'}
           </CardTitle>
           <CardDescription className="auth-description">
             {isSignup ? 'join critterFX!' : 'sign in!'}
