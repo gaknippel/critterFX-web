@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
@@ -28,7 +29,8 @@ export default function Auth() {
   })
       if (error) throw error
       
-      setMessage('welcome back!')
+    setMessage('welcome back!')
+    navigate('/')  //redir to home screen
     }
     catch(error : any){
         setIsError(true)
@@ -67,6 +69,9 @@ const handleSignUp = async (e: React.FormEvent) => {
     setIsLoading(false)
   }
 }
+
+const navigate = useNavigate()
+
 
   return (
     <div className="auth-page">
