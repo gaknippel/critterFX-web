@@ -6,8 +6,7 @@ import './NavBar.css'
 export function NavBar() {
 
   const { user, isLoading } = useUserContext()
-  console.log('navbar - user:', user, 'isLoading:', isLoading)
-
+  
 
   return (
     <div className="navbar-wrapper">

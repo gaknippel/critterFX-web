@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react"
-import { supabase } from "@/lib/supabase"
+import { supabase } from "../lib/supabase"
 
 type UserProfile = {
   id: string
@@ -18,35 +18,29 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    console.log('UserContext mounted')
-    // check if theres already a session when app loads
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-    try {
-        if (session?.user) {
-        await fetchProfile(session.user.id)
-        }
-    } catch (error) {
-        console.error('error fetching profile:', error)
-    } finally {
-        setIsLoading(false)  //  this will ALWAYS run 
-    }
-    })
 
-    // listen for sign in/sign out events
+  useEffect(() => {
+
+
+            console.log('testing direct query...')
+        supabase.from('presets').select('count').then(result => {
+            console.log('direct query result:', result)
+        })
+
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         await fetchProfile(session.user.id)
       } else {
         setUser(null)
       }
+      setIsLoading(false)
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
   const fetchProfile = async (userId: string) => {
-    console.log('fetching profile for:', userId)
     const { data } = await supabase
       .from('profiles')
       .select('id, username')

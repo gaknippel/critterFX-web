@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase } from "@/lib/supabase"
 
 export interface Preset {
   id: string
@@ -39,11 +39,15 @@ export const categories = [
 ]
 
 export async function fetchPresets(): Promise<Preset[]> {
+   console.log('fetchPresets called')
     const {data, error} = await supabase
     .from('presets')
     .select('*')
     .eq('is_approved', true)  // only show approved presets
     .order('created_at', { ascending: false })  // newest 
+
+  console.log('fetchPresets result:', data, error)  // ← add this
+
 
   if (error) {
     console.error('error fetching presets:', error)
