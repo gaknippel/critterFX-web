@@ -1,12 +1,8 @@
 import { Link } from 'react-router-dom'
 import { Home, Upload, User, Hexagon } from 'lucide-react'
-import { useUserContext } from '@/context/UserContext'
 import './NavBar.css'
 
-export function NavBar() {
-
-  const { user, isLoading } = useUserContext()
-  
+export function NavBar() {  
 
   return (
     <div className="navbar-wrapper">
@@ -29,17 +25,12 @@ export function NavBar() {
             <Upload size={18} />
             <span>Upload</span>
           </Link>
-          {user ? (
-            <Link to="/profile" className="navbar-link">
-              <User size={18} />
-              <span>{user.username}</span>
-            </Link>
-          ) : (
+
             <Link to="/auth" className="navbar-link">
               <User size={18} />
               <span>Sign In</span>
             </Link>
-          )}
+
         </div>
       </nav>
     </div>
