@@ -97,7 +97,7 @@ export default function PresetDetail() {
               <DialogHeader>
                 <DialogTitle>get critterFX desktop!</DialogTitle>
                 <DialogDescription>
-                  install presets directly into after effects with one click :D.
+                  install presets directly into after effects with one click. :D
                 </DialogDescription>
               </DialogHeader>
               <div className="bg-muted p-4 rounded-lg flex items-center justify-between gap-4">

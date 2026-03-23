@@ -200,3 +200,25 @@ button:focus-visible {
     @apply font-sans;
   }
 }
+
+.cn-toast {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #fafafa !important;
+  border-radius: 0.5rem !important;
+  padding: 1rem !important;
+}
+
+.cn-toast[data-type="success"] {
+  border-color: rgba(0, 255, 94, 0.38) !important;
+  background: rgba(0, 0, 0, 0.812) !important;
+}
+
+.cn-toast[data-type="error"] {
+  border-color: rgba(255, 0, 0, 0.538) !important;
+  background: rgba(0, 0, 0, 0.825) !important;
+}
+
+.cn-toast [data-icon] {
+  color: inherit !important;
+}
