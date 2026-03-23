@@ -18,6 +18,7 @@ export default function Auth() {
   const [isError, setIsError] = useState(false)
 
   const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault()
     setIsLoading(true)
 
     try {    
@@ -39,30 +40,33 @@ export default function Auth() {
 
   } 
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    setIsLoading(true)
-    
-    try{
-      const { data, error } = await supabase.auth.signUp({ email, password })
-      if (error) throw error
-      if(!data.user) throw new Error('no user returned')
-      
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({ id: data.user.id, username })
-        
-      if (profileError) throw profileError
+const handleSignUp = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsLoading(true)
+  setMessage('')
+  setIsError(false)
 
-      setMessage('success! account created.')
-    }
-    catch(error: any){
-      setIsError(true)
-      setMessage(error.message)
-    }
-    finally{
-      setIsLoading(false)
-    }
+  try {
+    const { error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: { username }
+      }
+    })
+
+    if (error) throw error
+    
+    setMessage('check your email to confirm your account!')
+  } 
+  catch (error: any) {
+    setIsError(true)
+    setMessage(error.message)
+  } 
+  finally {
+    setIsLoading(false)
   }
+}
 
   return (
     <div className="auth-page">

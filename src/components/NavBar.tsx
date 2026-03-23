@@ -1,23 +1,26 @@
 import { Link } from 'react-router-dom'
 import { Home, Upload, User, Hexagon } from 'lucide-react'
+import { useUserContext } from '@/context/UserContext'
 import './NavBar.css'
 
 export function NavBar() {
+
+  const { user, isLoading } = useUserContext()
+  console.log('navbar - user:', user, 'isLoading:', isLoading)
+
+
   return (
     <div className="navbar-wrapper">
-      {/* Fade mask background - purely opacity gradient, no blur */}
       <div className="navbar-fade-mask" />
       
       <nav className="navbar-content">
-        {/* Logo and Name (Left) */}
         <Link to="/" className="navbar-brand">
           <div className="navbar-logo-container">
             <Hexagon size={22} className="navbar-logo-icon" />
           </div>
           <span>critterFX</span>
         </Link>
-        
-        {/* Navigation Links (Right) */}
+
         <div className="navbar-links">
           <Link to="/" className="navbar-link">
             <Home size={18} />
@@ -27,10 +30,17 @@ export function NavBar() {
             <Upload size={18} />
             <span>Upload</span>
           </Link>
-          <Link to="/auth" className="navbar-link">
-            <User size={18} />
-            <span>Auth</span>
-          </Link>
+          {user ? (
+            <Link to="/profile" className="navbar-link">
+              <User size={18} />
+              <span>{user.username}</span>
+            </Link>
+          ) : (
+            <Link to="/auth" className="navbar-link">
+              <User size={18} />
+              <span>Sign In</span>
+            </Link>
+          )}
         </div>
       </nav>
     </div>
