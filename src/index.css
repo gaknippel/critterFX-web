@@ -202,23 +202,38 @@ button:focus-visible {
 }
 
 .cn-toast {
-  background: rgba(0, 0, 0, 0.9) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #fafafa !important;
-  border-radius: 0.5rem !important;
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
+  color: var(--foreground) !important;
+  border-radius: var(--radius) !important;
   padding: 1rem !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
+  font-family: var(--font-sans) !important;
 }
 
 .cn-toast[data-type="success"] {
-  border-color: rgba(0, 255, 94, 0.38) !important;
-  background: rgba(0, 0, 0, 0.812) !important;
+  border-color: color-mix(in oklch, oklch(0.7 0.2 150), transparent 50%) !important;
+}
+
+.cn-toast[data-type="success"] [data-icon] {
+  color: oklch(0.7 0.2 150) !important;
 }
 
 .cn-toast[data-type="error"] {
-  border-color: rgba(255, 0, 0, 0.538) !important;
-  background: rgba(0, 0, 0, 0.825) !important;
+  border-color: color-mix(in oklch, var(--destructive), transparent 50%) !important;
 }
 
-.cn-toast [data-icon] {
-  color: inherit !important;
+.cn-toast[data-type="error"] [data-icon] {
+  color: var(--destructive) !important;
+}
+
+.cn-toast [data-title] {
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+}
+
+.cn-toast [data-description] {
+  font-size: 0.8rem !important;
+  opacity: 0.8 !important;
 }

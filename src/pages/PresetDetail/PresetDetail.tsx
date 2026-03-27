@@ -116,7 +116,7 @@ export default function PresetDetail() {
           {preset.file_name.endsWith('.aep') && (
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="lg" className="w-full mt-4">
+                <Button variant="outline" size="lg" className="w-full mt-4 how-to-install-btn">
                   <Info className="mr-2 h-5 w-5" />
                   how to install!!! (IMPORTANT)
                 </Button>

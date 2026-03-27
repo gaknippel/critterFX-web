@@ -6,6 +6,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   Card,
   CardHeader,
   CardTitle,
@@ -15,6 +22,8 @@ import {
 } from '@/components/ui/card'
 import { supabase } from '@/lib/supabase'
 import { categories } from '@/lib/api'
+import { Loader2, Upload as UploadIcon } from 'lucide-react'
+import { toast } from 'sonner'
 import './Upload.css'
 
 
@@ -35,6 +44,7 @@ export default function Upload() {
   const [gifFile, setGifFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [gifDragOver, setGifDragOver] = useState(false)
 
 
  
@@ -67,11 +77,20 @@ if (!user) {
     if (detected) setCategory(detected)
   }
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handlePresetDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setDragOver(false)
     const file = e.dataTransfer.files[0]
     if (file) handlePresetFileChange(file)
+  }
+
+  const handleGifDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setGifDragOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file && file.type === 'image/gif') {
+      setGifFile(file)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -127,10 +146,10 @@ if (!user) {
 
       if (dbError) throw dbError
 
-      alert('preset uploaded! it will be reviewed before going live.')
+      toast.success('preset uploaded! it will be reviewed before going live.')
       navigate('/')
     } catch (error: any) {
-      alert(error.message)
+      toast.error(error.message || 'failed to upload preset')
     } finally {
       setIsUploading(false)
     }
@@ -153,7 +172,7 @@ return (
             {/* drag and drop zone */}
             <div
               className={`upload-dropzone ${dragOver ? 'dragover' : ''} ${presetFile ? 'has-file' : ''}`}
-              onDrop={handleDrop}
+              onDrop={handlePresetDrop}
               onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
               onDragLeave={() => setDragOver(false)}
               onClick={() => document.getElementById('preset-file-input')?.click()}
@@ -189,18 +208,16 @@ return (
               {/* category */}
               <div className="upload-field">
                 <Label htmlFor="category">category</Label>
-                <select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  required
-                  className="upload-select"
-                >
-                  <option value="">select a category</option>
-                  {categories.filter(c => c.id !== 'all').map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
+                <Select value={category} onValueChange={setCategory} required>
+                  <SelectTrigger id="category" className="w-full category-select">
+                    <SelectValue placeholder="select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.filter(c => c.id !== 'all').map(c => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {category && <p className="upload-auto-detected">auto-detected: {category}</p>}
               </div>
             </div>
@@ -241,17 +258,36 @@ return (
               <Input id="dependencies" value={dependencies} onChange={(e) => setDependencies(e.target.value)} placeholder="none" />
             </div>
 
-            {/* gif upload */}
+            {/* gif upload dropzone */}
             <div className="upload-field">
               <Label htmlFor="gif">preview gif</Label>
-              <Input
-                id="gif"
-                type="file"
-                accept="image/gif"
-                onChange={(e) => e.target.files?.[0] && setGifFile(e.target.files[0])}
-                className="cursor-pointer"
-              />
-              {gifFile && <p className="upload-auto-detected">selected: {gifFile.name}</p>}
+              <div
+                className={`upload-dropzone ${gifDragOver ? 'dragover' : ''} ${gifFile ? 'has-file' : ''}`}
+                onDrop={handleGifDrop}
+                onDragOver={(e) => { e.preventDefault(); setGifDragOver(true) }}
+                onDragLeave={() => setGifDragOver(false)}
+                onClick={() => document.getElementById('gif-file-input')?.click()}
+                style={{ padding: '2rem' }}
+              >
+                <input
+                  id="gif-file-input"
+                  type="file"
+                  accept="image/gif"
+                  style={{ display: 'none' }}
+                  onChange={(e) => e.target.files?.[0] && setGifFile(e.target.files[0])}
+                />
+                {gifFile ? (
+                  <div className="upload-file-info">
+                    <p className="upload-file-name">{gifFile.name}</p>
+                    <p className="upload-file-size">{formatFileSize(gifFile.size)}</p>
+                  </div>
+                ) : (
+                  <div className="upload-dropzone-prompt">
+                    <p>drag & drop preview gif here</p>
+                    <p className="upload-dropzone-sub">or click to browse — .gif only</p>
+                  </div>
+                )}
+              </div>
             </div>
           </form>
         </CardContent>
@@ -260,9 +296,19 @@ return (
             form="upload-form"
             type="submit" 
             disabled={isUploading || !presetFile || !gifFile} 
-            className="w-full"
+            className="w-full upload-submit-btn"
           >
-            {isUploading ? 'uploading...' : 'submit for review'}
+            {isUploading ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                uploading...
+              </>
+            ) : (
+              <>
+                <UploadIcon className="mr-2 h-5 w-5" />
+                submit for review
+              </>
+            )}
           </Button>
         </CardFooter>
       </Card>
