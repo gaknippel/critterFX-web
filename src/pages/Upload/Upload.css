@@ -1,0 +1,123 @@
+.upload-auth-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 24rem;
+  gap: 1rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.upload-wrapper {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.upload-card {
+  background: color-mix(in oklch, var(--card), transparent 50%);
+  backdrop-filter: blur(8px);
+  border-color: color-mix(in oklch, var(--border), transparent 50%);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.upload-dropzone {
+  border: 2px dashed color-mix(in oklch, var(--border), transparent 20%);
+  border-radius: 0.75rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--muted), transparent 70%);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.dragover {
+  border-color: var(--primary);
+  background: color-mix(in oklch, var(--accent), transparent 50%);
+  color: var(--foreground);
+}
+
+.upload-dropzone.has-file {
+  border-color: var(--primary);
+  border-style: solid;
+  background: color-mix(in oklch, var(--primary), transparent 95%);
+}
+
+.upload-dropzone-prompt p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.upload-dropzone-sub {
+  font-size: 0.85rem !important;
+  margin-top: 0.5rem !important;
+  opacity: 0.7;
+}
+
+.upload-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.upload-file-name {
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.upload-file-size {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+.upload-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.upload-select {
+  background: var(--background);
+  border: 1px solid var(--input);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 0.5rem 0.75rem;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  cursor: pointer;
+  height: 2.5rem;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.upload-select:focus {
+  outline: none;
+  border-color: var(--ring);
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  font-weight: 400;
+}
+
+.upload-auto-detected {
+  font-size: 0.8rem;
+  color: var(--primary);
+  margin: 0.25rem 0 0 0;
+}

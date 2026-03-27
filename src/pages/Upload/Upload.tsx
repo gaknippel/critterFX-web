@@ -1,21 +1,271 @@
-function getExtension(filename: string): string {
-  return filename.split('.').pop()?.toLowerCase() ?? ''
-}
+import { useState } from 'react'
+import { useUserContext } from '@/context/UserContext'
+import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter
+} from '@/components/ui/card'
+import { supabase } from '@/lib/supabase'
+import { categories } from '@/lib/api'
+import './Upload.css'
 
-function detectCategory(file: File): string {
-  const ext = getExtension(file.name)
-  if (ext === 'jsx') return 'script'
-  if (ext === 'ffx') return 'preset'
-  if (ext === 'aep') return 'composition'
-  return ''
-}
+
 
 export default function Upload() {
 
- 
-  return (
-    <div className="container max-w-2xl mx-auto py-8 px-4">
+  const { user } = useUserContext()
+  const navigate = useNavigate()
 
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [longDescription, setLongDescription] = useState('')
+  const [category, setCategory] = useState('')
+  const [tags, setTags] = useState('')
+  const [dependencies, setDependencies] = useState('')
+  const [aeVersion, setAeVersion] = useState('')
+  const [presetFile, setPresetFile] = useState<File | null>(null)
+  const [gifFile, setGifFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [dragOver, setDragOver] = useState(false)
+
+
+ 
+if (!user) {
+  return (
+    <div className="upload-auth-gate">
+      <p>you need to be signed in to upload presets.</p>
+      <Button onClick={() => navigate('/auth')}>sign in</Button>
+    </div>
+  )
+}
+
+
+  const detectCategory = (file: File) => {
+    const ext = file.name.split('.').pop()?.toLowerCase()
+    if (ext === 'jsx') return 'scripts'
+    if (ext === 'aep') return 'compositions'
+    return '' // ffx needs manual selection
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+  }
+
+  const handlePresetFileChange = (file: File) => {
+    setPresetFile(file)
+    const detected = detectCategory(file)
+    if (detected) setCategory(detected)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file) handlePresetFileChange(file)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!presetFile || !gifFile || !user) return
+    setIsUploading(true)
+
+    try {
+      // upload preset file
+      const presetPath = `${user.id}/${Date.now()}_${presetFile.name}`
+      const { error: presetUploadError } = await supabase.storage
+        .from('preset-files')
+        .upload(presetPath, presetFile)
+      if (presetUploadError) throw presetUploadError
+
+      // get public url for preset file
+      const { data: presetUrlData } = supabase.storage
+        .from('preset-files')
+        .getPublicUrl(presetPath)
+
+      // upload gif
+      const gifPath = `${user.id}/${Date.now()}_${gifFile.name}`
+      const { error: gifUploadError } = await supabase.storage
+        .from('preset-previews')
+        .upload(gifPath, gifFile)
+      if (gifUploadError) throw gifUploadError
+
+      // get public url for gif
+      const { data: gifUrlData } = supabase.storage
+        .from('preset-previews')
+        .getPublicUrl(gifPath)
+
+      // insert preset into database
+      const { error: dbError } = await supabase
+        .from('presets')
+        .insert({
+          user_id: user.id,
+          author_name: user.username,
+          name,
+          description,
+          long_description: longDescription,
+          category,
+          file_name: presetFile.name,
+          file_url: presetUrlData.publicUrl,
+          preview_gif_url: gifUrlData.publicUrl,
+          file_size: formatFileSize(presetFile.size),
+          ae_version: aeVersion,
+          tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+          dependencies: dependencies.split(',').map(d => d.trim()).filter(Boolean),
+          is_approved: false,
+          download_count: 0,
+        })
+
+      if (dbError) throw dbError
+
+      alert('preset uploaded! it will be reviewed before going live.')
+      navigate('/')
+    } catch (error: any) {
+      alert(error.message)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+
+
+return (
+    <div className="upload-wrapper">
+      <Card className="upload-card">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">upload a preset</CardTitle>
+          <CardDescription>
+            share your work with the community. presets are reviewed before appearing.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form id="upload-form" onSubmit={handleSubmit} className="upload-form">
+            
+            {/* drag and drop zone */}
+            <div
+              className={`upload-dropzone ${dragOver ? 'dragover' : ''} ${presetFile ? 'has-file' : ''}`}
+              onDrop={handleDrop}
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+              onDragLeave={() => setDragOver(false)}
+              onClick={() => document.getElementById('preset-file-input')?.click()}
+            >
+              <input
+                id="preset-file-input"
+                type="file"
+                accept=".ffx,.jsx,.aep"
+                style={{ display: 'none' }}
+                onChange={(e) => e.target.files?.[0] && handlePresetFileChange(e.target.files[0])}
+              />
+              {presetFile ? (
+                <div className="upload-file-info">
+                  <p className="upload-file-name">{presetFile.name}</p>
+                  <p className="upload-file-size">{formatFileSize(presetFile.size)}</p>
+                </div>
+              ) : (
+                <div className="upload-dropzone-prompt">
+                  <p>drag & drop your preset here</p>
+                  <p className="upload-dropzone-sub">or click to browse — .ffx, .jsx, .aep</p>
+                </div>
+              )}
+            </div>
+
+            {/* Grid for small fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* name */}
+              <div className="upload-field">
+                <Label htmlFor="name">preset name</Label>
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required placeholder="my cool preset" />
+              </div>
+
+              {/* category */}
+              <div className="upload-field">
+                <Label htmlFor="category">category</Label>
+                <select
+                  id="category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+                  className="upload-select"
+                >
+                  <option value="">select a category</option>
+                  {categories.filter(c => c.id !== 'all').map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+                {category && <p className="upload-auto-detected">auto-detected: {category}</p>}
+              </div>
+            </div>
+
+            {/* short description */}
+            <div className="upload-field">
+              <Label htmlFor="description">short description</Label>
+              <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} required placeholder="a brief one-liner" />
+            </div>
+
+            {/* long description */}
+            <div className="upload-field">
+              <Label htmlFor="longDescription">long description</Label>
+              <Textarea
+                id="longDescription"
+                value={longDescription}
+                onChange={(e) => setLongDescription(e.target.value)}
+                placeholder="detailed instructions, tips, how to use..."
+                className="min-height-[120px]"
+              />
+            </div>
+
+            {/* ae version */}
+            <div className="upload-field">
+              <Label htmlFor="aeVersion">after effects version</Label>
+              <Input id="aeVersion" value={aeVersion} onChange={(e) => setAeVersion(e.target.value)} placeholder="2023 or later" />
+            </div>
+
+            {/* tags */}
+            <div className="upload-field">
+              <Label htmlFor="tags">tags <span className="upload-hint">(comma separated)</span></Label>
+              <Input id="tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="animation, text, smooth" />
+            </div>
+
+            {/* dependencies */}
+            <div className="upload-field">
+              <Label htmlFor="dependencies">dependencies <span className="upload-hint">(comma separated, or "none")</span></Label>
+              <Input id="dependencies" value={dependencies} onChange={(e) => setDependencies(e.target.value)} placeholder="none" />
+            </div>
+
+            {/* gif upload */}
+            <div className="upload-field">
+              <Label htmlFor="gif">preview gif</Label>
+              <Input
+                id="gif"
+                type="file"
+                accept="image/gif"
+                onChange={(e) => e.target.files?.[0] && setGifFile(e.target.files[0])}
+                className="cursor-pointer"
+              />
+              {gifFile && <p className="upload-auto-detected">selected: {gifFile.name}</p>}
+            </div>
+          </form>
+        </CardContent>
+        <CardFooter>
+          <Button 
+            form="upload-form"
+            type="submit" 
+            disabled={isUploading || !presetFile || !gifFile} 
+            className="w-full"
+          >
+            {isUploading ? 'uploading...' : 'submit for review'}
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   )
 }
