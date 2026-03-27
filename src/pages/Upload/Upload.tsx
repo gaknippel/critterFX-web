@@ -52,7 +52,7 @@ if (!user) {
   return (
     <div className="upload-auth-gate">
       <p>you need to be signed in to upload presets.</p>
-      <Button onClick={() => navigate('/auth')}>sign in</Button>
+      <Button className="sign-in-button" onClick={() => navigate('/auth')}>sign in</Button>
     </div>
   )
 }

@@ -8,6 +8,11 @@
   color: hsl(var(--muted-foreground));
 }
 
+.sign-in-button {
+  color: white;
+  border: 0,0,0;
+}
+
 .upload-wrapper {
   padding: 2rem;
   max-width: 800px;
