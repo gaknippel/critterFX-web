@@ -22,11 +22,29 @@ import {
 } from '@/components/ui/card'
 import { supabase } from '@/lib/supabase'
 import { categories } from '@/lib/api'
-import { Loader2, Upload as UploadIcon } from 'lucide-react'
+import { 
+  Loader2, 
+  Upload as UploadIcon,
+  Type,
+  MoveHorizontal,
+  Shapes,
+  Sparkles,
+  Image,
+  Code,
+  Layers
+} from 'lucide-react'
 import { toast } from 'sonner'
 import './Upload.css'
 
-
+const categoryIcons: Record<string, React.ReactNode> = {
+  textAnims: <Type className="size-4" />,
+  transitions: <MoveHorizontal className="size-4" />,
+  shapeAnims: <Shapes className="size-4" />,
+  effects: <Sparkles className="size-4" />,
+  backgrounds: <Image className="size-4" />,
+  scripts: <Code className="size-4" />,
+  compositions: <Layers className="size-4" />,
+}
 
 export default function Upload() {
 
@@ -163,7 +181,7 @@ return (
         <CardHeader>
           <CardTitle className="text-2xl font-bold">upload a preset</CardTitle>
           <CardDescription>
-            share your work with the community. presets are reviewed before appearing.
+            share your work with the community! presets are reviewed by me before appearing online, so don't try stupid stuff 😭
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -209,16 +227,25 @@ return (
               <div className="upload-field">
                 <Label htmlFor="category">category</Label>
                 <Select value={category} onValueChange={setCategory} required>
-                  <SelectTrigger id="category" className="w-full category-select">
+                  <SelectTrigger id="category" className="w-full category-select h-10">
                     <SelectValue placeholder="select a category" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper">
                     {categories.filter(c => c.id !== 'all').map(c => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                      <SelectItem key={c.id} value={c.id}>
+                        <div className="flex items-center gap-2">
+                          {categoryIcons[c.id]}
+                          <span>{c.name}</span>
+                        </div>
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                {category && <p className="upload-auto-detected">auto-detected: {category}</p>}
+                {category && (
+                  <p className="upload-auto-detected">
+                    auto-detected: <span className="font-semibold">{categories.find(c => c.id === category)?.name || category}</span>
+                  </p>
+                )}
               </div>
             </div>
 

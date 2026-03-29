@@ -3,13 +3,34 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, RefreshCw } from "lucide-react"
+import { 
+  Search, 
+  RefreshCw, 
+  Type, 
+  MoveHorizontal, 
+  Shapes, 
+  Sparkles, 
+  Image, 
+  Code, 
+  Layers, 
+  LayoutGrid 
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from '@/components/ui/skeleton'
 import { fetchPresets, categories, type Preset } from '@/lib/api'
 import SplitText from '@/components/SplitText'
 import FadeContent from '@/components/FadeContent'
 
+const IconMap: Record<string, any> = {
+  LayoutGrid,
+  Type,
+  MoveHorizontal,
+  Shapes,
+  Sparkles,
+  Image,
+  Code,
+  Layers,
+}
 
 export default function Home() {
   const [presets, setPresets] = useState<Preset[]>([])
@@ -110,15 +131,19 @@ export default function Home() {
           <h2 className="sidebar-title">categories</h2>
           <ScrollArea className="categories-scroll">
             <nav className="categories-nav">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
-                >
-                  {category.name}
-                </button>
-              ))}
+              {categories.map((category) => {
+                const Icon = IconMap[category.icon || 'LayoutGrid']
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`category-item ${selectedCategory === category.id ? 'active' : ''}`}
+                  >
+                    <Icon className="category-icon" />
+                    <span className="category-name">{category.name}</span>
+                  </button>
+                )
+              })}
             </nav>
           </ScrollArea>
         </aside>

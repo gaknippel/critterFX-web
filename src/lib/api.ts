@@ -28,14 +28,14 @@ export interface Preset {
 }
 
 export const categories = [
-  { id: 'all', name: 'all presets' },
-  { id: 'textAnims', name: 'text animations' },
-  { id: 'transitions', name: 'transitions' },
-  { id: 'shapeAnims', name: 'shape animations' },
-  { id: 'effects', name: 'effects' },
-  { id: 'backgrounds', name: 'backgrounds' },
-  { id: 'scripts', name: 'scripts' },
-  { id: 'compositions', name: 'compositions' },
+  { id: 'all', name: 'all presets', icon: 'LayoutGrid' },
+  { id: 'textAnims', name: 'text animations', icon: 'Type' },
+  { id: 'transitions', name: 'transitions', icon: 'MoveHorizontal' },
+  { id: 'shapeAnims', name: 'shape animations', icon: 'Shapes' },
+  { id: 'effects', name: 'effects', icon: 'Sparkles' },
+  { id: 'backgrounds', name: 'backgrounds', icon: 'Image' },
+  { id: 'scripts', name: 'scripts', icon: 'Code' },
+  { id: 'compositions', name: 'compositions', icon: 'Layers' },
 ]
 
 export async function fetchPresets(): Promise<Preset[]> {

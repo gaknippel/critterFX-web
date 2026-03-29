@@ -237,3 +237,12 @@ button:focus-visible {
   font-size: 0.8rem !important;
   opacity: 0.8 !important;
 }
+
+ button:focus, 
+   button:focus-visible {
+   outline: none !important;
+   box-shadow: none !important;
+     /* Some frameworks use
+     box-shadow instead of outline
+     */
+   }

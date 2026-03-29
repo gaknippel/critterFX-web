@@ -97,27 +97,64 @@
   gap: 0.5rem;
 }
 
-.category-select {
-  height: 2.5rem !important;
-  background: color-mix(in oklch, var(--input), transparent 80%) !important;
-  border: 1px solid color-mix(in oklch, var(--border), transparent 80%) !important;
+/* Consistent styling for all form inputs */
+.upload-field [data-slot="input"],
+.upload-field [data-slot="select-trigger"],
+.upload-field textarea {
+  background: color-mix(in oklch, var(--card), transparent 40%) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  border-radius: 0.625rem !important;
+  height: 2.75rem !important;
+  padding: 0 0.875rem !important;
   width: 100% !important;
-  border-radius: 0.5rem !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: var(--foreground) !important;
+  font-size: 0.9rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
-.category-select:hover {
-  background: color-mix(in oklch, var(--input), transparent 60%) !important;
-  border-color: color-mix(in oklch, var(--border), transparent 40%) !important;
+.upload-field textarea {
+  height: auto !important;
+  min-height: 120px !important;
+  padding: 0.75rem !important;
 }
 
-.category-select:focus, 
-.category-select:focus-visible,
-.category-select[data-state="open"] {
-  border-color: var(--primary) !important;
+.upload-field [data-slot="input"]:hover,
+.upload-field [data-slot="select-trigger"]:hover {
+  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+}
+
+.upload-field [data-slot="input"]:focus-visible,
+.upload-field [data-slot="select-trigger"][data-state="open"] {
   outline: none !important;
-  box-shadow: none !important;
-  ring: none !important;
+  border-color: var(--primary) !important;
+  background: color-mix(in oklch, var(--card), transparent 10%) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%) !important;
+}
+
+[data-slot="select-content"] {
+  background: color-mix(in oklch, var(--popover), transparent 5%) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2) !important;
+  padding: 0.25rem !important;
+}
+
+[data-slot="select-item"] {
+  color: var(--foreground) !important;
+  cursor: pointer !important;
+  border-radius: 0.5rem !important;
+  margin: 0.125rem 0 !important;
+  padding: 0.5rem 0.75rem !important;
+  transition: all 0.15s ease !important;
+}
+
+[data-slot="select-item"]:hover,
+[data-slot="select-item"]:focus {
+  background: color-mix(in oklch, var(--accent), transparent 30%) !important;
+  color: var(--foreground) !important;
 }
 
 .upload-hint {
@@ -158,4 +195,22 @@
   background: var(--muted) !important;
   box-shadow: none !important;
   opacity: 0.5 !important;
+}
+
+[data-slot="select-content"][data-state="open"] {
+  animation: selectIn 0.15s ease;
+}
+
+[data-slot="select-content"][data-state="closed"] {
+  animation: selectOut 0.15s ease;
+}
+
+@keyframes selectIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes selectOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-4px) scale(0.97); }
 }
