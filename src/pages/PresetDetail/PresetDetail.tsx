@@ -32,11 +32,11 @@ export default function PresetDetail() {
     if (isLoading) {
     return (
       <div className="preset-detail-wrapper">
-        <div className="preset-detail-header">
-          <Skeleton className="h-9 w-32" />
-        </div>
         <div className="preset-detail-content">
           <div className="preset-preview-section">
+            <div className="preset-detail-header">
+              <Skeleton className="h-9 w-32" />
+            </div>
             <Skeleton className="w-full aspect-video rounded-xl" />
             <Skeleton className="h-12 w-full" />
           </div>
@@ -73,15 +73,14 @@ export default function PresetDetail() {
 
   return (
     <div className="preset-detail-wrapper">
-      <div className="preset-detail-header">
-        <Button variant="ghost" onClick={() => navigate('/')} className="back-button">
-          <ArrowLeft className="mr-2" size={20} />
-          back to browser
-        </Button>
-      </div>
-
       <div className="preset-detail-content">
         <div className="preset-preview-section">
+          <div className="preset-detail-header">
+            <Button variant="ghost" onClick={() => navigate('/')} className="back-button">
+              <ArrowLeft className="mr-2" size={20} />
+              back to browser
+            </Button>
+          </div>
           <div className="preset-preview-large">
             <img src={preset.previewGif} alt={preset.name} />
           </div>

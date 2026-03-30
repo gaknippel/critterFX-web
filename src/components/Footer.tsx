@@ -1,16 +1,17 @@
 import { Github, Coffee, Mail } from "lucide-react"
+import "./Footer.css"
 
 export function Footer() {
   return (
-    <footer className="w-full py-4 px-6 border-t border-border bg-background/50 mt-auto">
-      <div className="max-w-7xl mx-auto grid grid-cols-3 items-center">
+    <footer className="footer">
+      <div className="footer-content">
         {/* Left: Links */}
-        <div className="flex items-center gap-6">
+        <div className="footer-links">
           <a
             href="https://github.com/gaknippel/critterFX-web"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="footer-link"
             aria-label="GitHub"
           >
             <Github size={18} />
@@ -19,14 +20,14 @@ export function Footer() {
             href="https://ko-fi.com/crittercast"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="footer-link"
             aria-label="Support on Ko-fi"
           >
             <Coffee size={18} />
           </a>
           <a
             href="mailto:gaknippel@hotmail.com"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="footer-link"
             aria-label="Contact via Email"
           >
             <Mail size={18} />
@@ -34,14 +35,14 @@ export function Footer() {
         </div>
 
         {/* Center: Copyright */}
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground whitespace-nowrap">
+        <div className="footer-center">
+          <p className="footer-copy">
             &copy; {new Date().getFullYear()} greyson knippel
           </p>
         </div>
 
         {/* Right: Empty (for balance) */}
-        <div />
+        <div className="footer-spacer" />
       </div>
     </footer>
   )

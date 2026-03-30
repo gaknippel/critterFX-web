@@ -2,6 +2,7 @@
   min-height: 100vh;
   color: hsl(var(--foreground));
   padding: 1.5rem;
+  overflow: visible;
 }
 
 .preset-not-found {
@@ -19,7 +20,7 @@
 }
 
 .preset-detail-header {
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .back-button {
@@ -35,6 +36,8 @@
   gap: 3rem;
   max-width: 1400px;
   margin: 0 auto;
+  align-items: start;
+  overflow: visible;
 }
 
 .preset-preview-section {
@@ -42,9 +45,9 @@
   flex-direction: column;
   gap: 1.5rem;
   position: sticky;
-  top: 2rem;
+  top: 100px;
   align-self: start;
-  overflow: hidden;
+  z-index: 10;
 }
 
 .preset-preview-large {
@@ -218,7 +221,7 @@
   color: hsl(var(--foreground)); 
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
   .preset-detail-content {
     grid-template-columns: 1fr;
     gap: 2rem;
