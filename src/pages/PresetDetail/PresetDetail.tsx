@@ -19,7 +19,7 @@ export default function PresetDetail() {
   useEffect(() => {
     loadPreset()
   }, [id])
-
+  
   const loadPreset = async () => {
     setIsLoading(true)
     const presets = await fetchPresets()

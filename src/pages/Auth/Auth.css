@@ -2,10 +2,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  flex: 1;
+  width: 100%;
   color: #fafafa;
   position: relative;
   padding: 1rem;
+  padding-bottom: 5vh; /* Move card up slightly from center */
   box-sizing: border-box;
 }
 
