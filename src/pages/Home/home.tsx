@@ -128,8 +128,8 @@ export default function Home() {
       <div className="home-content-layout">
         {/* categories sidebar */}
         <aside className="categories-sidebar">
-          <h2 className="sidebar-title">categories</h2>
           <ScrollArea className="categories-scroll">
+            <h2 className="sidebar-title">categories</h2>
             <nav className="categories-nav">
               {categories.map((category) => {
                 const Icon = IconMap[category.icon || 'LayoutGrid']

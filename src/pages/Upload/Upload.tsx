@@ -252,7 +252,7 @@ return (
             {/* short description */}
             <div className="upload-field">
               <Label htmlFor="description">short description</Label>
-              <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} required placeholder="a brief one-liner" />
+              <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} required placeholder="a short one-liner" />
             </div>
 
             {/* long description */}
@@ -262,7 +262,7 @@ return (
                 id="longDescription"
                 value={longDescription}
                 onChange={(e) => setLongDescription(e.target.value)}
-                placeholder="detailed instructions, tips, how to use..."
+                placeholder="detailed instructions, tips, how to use, etc."
                 className="min-height-[120px]"
               />
             </div>
