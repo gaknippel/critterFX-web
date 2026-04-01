@@ -20,7 +20,7 @@ export type Preset = {
   name: string
   description: string
   long_description?: string
-  category: string
+category: string
   file_name: string
   file_url: string
   preview_gif_url?: string

@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Download, Info, Package, FileCode } from 'lucide-react'
+import { ArrowLeft, Download, Info, Package, FileCode, MessageSquare, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useState, useEffect } from 'react'
@@ -8,16 +8,55 @@ import { fetchPresets, categories, type Preset } from '@/lib/api'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog"
 import SplitText from '@/components/SplitText'
 import { Skeleton } from '@/components/ui/skeleton'
+import { supabase, Comment } from '@/lib/supabase'
+import { toast } from 'sonner'
+import { useUserContext } from '@/context/UserContext'
+import { Textarea } from '@/components/ui/textarea'
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import FadeContent from '@/components/FadeContent'
+
 
 export default function PresetDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [preset, setPreset] = useState<Preset | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentText, setCommentText] = useState('');
+  const [isPostingComment, setIsPostingComment] = useState(false);
+
+  const { user } = useUserContext()
+  
 
   // load preset data
   useEffect(() => {
     loadPreset()
+    fetchComments()
+
+
+     // realtime comment changing
+  const subscription = supabase
+    .channel('comments')
+    .on('postgres_changes', 
+      { 
+        event: 'INSERT',        // only listen for new comments
+        schema: 'public', 
+        table: 'comments',
+        filter: `preset_id=eq.${id}`  // only this preset's comments
+      }, 
+      (payload) => 
+      {
+        // payload.new is the newly inserted comment row
+        setComments(prev => [...prev, payload.new as Comment])
+      }
+    )
+    .subscribe()
+
+  // cleanup when component unmounts
+  return () => 
+  {
+    subscription.unsubscribe()
+  }
   }, [id])
   
   const loadPreset = async () => {
@@ -28,6 +67,59 @@ export default function PresetDetail() {
     setIsLoading(false  )
     window.scrollTo(0, 0)
   }
+
+  const fetchComments = async () => {
+    console.log('fetchComments called')
+    const {data, error} = await supabase
+    .from('comments')
+    .select('*')
+    .eq('preset_id', id)  // only show approved presets
+    .order('created_at', { ascending: true })  // newest 
+
+  console.log('fetchComments result:', data, error)  // ← add this
+
+
+  if (error) {
+    console.error('error fetching comments:', error)
+    return error
+  }
+
+  if (data) setComments(data);
+  }
+
+  const handlePostComment = async () => {
+  if (!user) {
+    toast.error('you need to be signed in to comment!')
+    return
+  }
+
+  if (commentText.trim() === '') {
+    toast.error('comment cannot be empty!')
+    return
+  }
+
+  setIsPostingComment(true)
+
+  try {
+    const { error } = await supabase
+      .from('comments')
+      .insert({
+        preset_id: id,
+        user_id: user.id,
+        author_name: user.username,
+        content: commentText,
+      })
+
+    if (error) throw error
+
+    setCommentText('')
+    toast.success('comment posted!')
+  } catch (error: any) {
+    toast.error(error.message)
+  } finally {
+    setIsPostingComment(false)
+  }
+}
   
     if (isLoading) {
     return (
@@ -215,6 +307,78 @@ export default function PresetDetail() {
                 <li key={index}>{dep}</li>
               )) || <li>no dependencies</li>}
             </ul>
+          </div>
+
+          <div className="detail-section">
+            <div className="section-header">
+              <MessageSquare size={20} />
+              <h2>comments</h2>
+            </div>
+
+            <div className="comments-section">
+              <div className="comments-list">
+                {comments.length === 0 ? (
+                  <p className="comments-empty">no comments yet. be the first!</p>
+                ) : (
+                  comments.map((comment, index) => (
+                    <FadeContent key={comment.id} delay={index * 50}>
+                      <Card className="comment-card bg-muted/20 border-none">
+                        <CardHeader className="flex-row items-center gap-3 p-4 pb-2">
+                          <div className="comment-avatar">
+                            {comment.author_name[0].toUpperCase()}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-sm">{comment.author_name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(comment.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="px-4 pb-4">
+                          <p className="text-sm leading-relaxed">{comment.content}</p>
+                        </CardContent>
+                      </Card>
+                    </FadeContent>
+                  ))
+                )}
+              </div>
+
+              <div className="comment-input-section mt-6">
+                {user ? (
+                  <div className="flex flex-col gap-3">
+                    <Textarea
+                      placeholder="write a comment..."
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      className="min-h-[100px] bg-muted/10 border-muted-foreground/20 focus-visible:ring-primary/20"
+                    />
+                    <Button
+                      onClick={handlePostComment}
+                      disabled={isPostingComment || commentText.trim() === ''}
+                      className="self-end comment-submit-btn"
+                    >
+                      {isPostingComment ? (
+                        'posting...'
+                      ) : (
+                        <>
+                          post comment
+                          <Send className="ml-2 h-4 w-4" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                ) : (
+                  <Card className="bg-muted/10 border-dashed">
+                    <CardContent className="p-4 flex items-center justify-between gap-4">
+                      <p className="text-sm text-muted-foreground">sign in to leave a comment!</p>
+                      <Button onClick={() => navigate('/auth')} variant="outline" size="sm">
+                        sign in
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
