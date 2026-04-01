@@ -13,7 +13,8 @@ import {
   Image, 
   Code, 
   Layers, 
-  LayoutGrid 
+  LayoutGrid,
+  Download,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from '@/components/ui/skeleton'
@@ -178,6 +179,10 @@ export default function Home() {
                           alt={preset.name}
                           loading="lazy"
                         />
+                        <div className="preset-download-badge">
+                          <Download size={12} />
+                          <span>{preset.download_count}</span>
+                        </div>
                       </div>
                       <div className="preset-info">
                         <h3 className="preset-name">{preset.name}</h3>

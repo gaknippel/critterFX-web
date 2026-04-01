@@ -129,6 +129,34 @@
   transition: transform 0.2s ease;
 }
 
+.preset-download-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: hsl(var(--background) / 0.8);
+  backdrop-filter: blur(4px);
+  color: hsl(var(--foreground));
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.preset-card:hover .preset-download-badge {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 .category-item:hover {
   background: color-mix(in oklch, var(--accent), transparent 50%);
   color: hsl(var(--foreground));

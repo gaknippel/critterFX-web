@@ -177,6 +177,11 @@ export default function PresetDetail() {
             <img src={preset.previewGif} alt={preset.name} />
           </div>
 
+        <Dialog onOpenChange={(open) => {
+          if (open) {
+            supabase.rpc('increment_download_count', { preset_id: id })
+          }
+        }}></Dialog>
           <Dialog>
             <DialogTrigger asChild>
               <Button className="download-button" size="lg">
@@ -275,6 +280,21 @@ export default function PresetDetail() {
             </div>
             <p className="detail-text">{preset.long_description || preset.description}</p>
           </div>
+
+          <div className="detail-section">
+            
+          <div className="section-header">
+            <Info size={20} />
+            <h2>description</h2>
+          </div>
+          <p className="detail-text">{preset.long_description || preset.description}</p>
+          
+          {/* download count stuff */}
+          <div className="download-count">
+            <Download size={14} />
+            <span>{preset.download_count} downloads</span>
+          </div>
+        </div>
 
           <div className="detail-section">
             <div className="section-header">

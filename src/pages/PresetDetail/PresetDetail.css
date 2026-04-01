@@ -245,8 +245,13 @@
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.comment-card:hover {
-  background-color: hsl(var(--muted) / 0.4);
+.download-count {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.85rem;
 }
 
 .comment-avatar {
