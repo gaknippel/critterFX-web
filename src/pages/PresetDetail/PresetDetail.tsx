@@ -282,19 +282,20 @@ export default function PresetDetail() {
           </div>
 
           <div className="detail-section">
-            
-          <div className="section-header">
-            <Info size={20} />
-            <h2>description</h2>
+            <div className="section-header">
+              <Download size={20} />
+              <h2>downloads</h2>
+            </div>
+            <div className="download-count">
+              <div className="download-count-icon">
+                <Download size={16} />
+              </div>
+              <div className="download-count-copy">
+                <span className="download-count-value">{preset.download_count}</span>
+                <span className="download-count-label">downloads so far</span>
+              </div>
+            </div>
           </div>
-          <p className="detail-text">{preset.long_description || preset.description}</p>
-          
-          {/* download count stuff */}
-          <div className="download-count">
-            <Download size={14} />
-            <span>{preset.download_count} downloads</span>
-          </div>
-        </div>
 
           <div className="detail-section">
             <div className="section-header">

@@ -133,20 +133,32 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: hsl(var(--background) / 0.8);
-  backdrop-filter: blur(4px);
-  color: hsl(var(--foreground));
-  padding: 0.15rem 0.45rem;
+  background: rgba(10, 10, 10, 0.96);
+  backdrop-filter: blur(8px);
+  color: hsl(var(--background));
+  padding: 0.2rem 0.5rem;
   border-radius: 0.4rem;
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  border: 1px solid hsl(var(--border));
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
   transition: all 0.2s ease;
   z-index: 10;
+}
+
+.preset-download-badge svg {
+  flex-shrink: 0;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+.preset-download-badge span {
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
 .preset-card:hover .preset-download-badge {
@@ -276,6 +288,12 @@
   margin: 0 0 0.25rem 0; 
 }
 
+.preset-author {
+  font-size: 0.78rem;
+  color: hsl(var(--muted-foreground));
+  margin: 0 0 0.45rem 0;
+}
+
 .preset-description {
   font-size: 0.8rem; 
   color: hsl(var(--muted-foreground));
@@ -394,6 +412,9 @@
   }
   .preset-name {
     font-size: 0.95rem;
+  }
+  .preset-author {
+    font-size: 0.74rem;
   }
   .preset-description {
     font-size: 0.75rem;

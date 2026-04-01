@@ -186,6 +186,7 @@ export default function Home() {
                       </div>
                       <div className="preset-info">
                         <h3 className="preset-name">{preset.name}</h3>
+                        <p className="preset-author">by {preset.author_name || 'Unknown'}</p>
                         <p className="preset-description">{preset.description}</p>
                       </div>
                     </div>
