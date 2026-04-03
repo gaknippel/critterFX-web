@@ -92,3 +92,31 @@
   background-color: color-mix(in srgb, var(--foreground) 10%, transparent); /* Adds a subtle background box on hover */
 }
 
+@media (max-width: 768px) {
+  .navbar-content {
+    padding: 1rem;
+  }
+  .navbar-links {
+    gap: 1rem;
+  }
+  .navbar-link {
+    padding: 0.5rem;
+  }
+  .navbar-link span {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-content {
+    padding: 0.75rem;
+  }
+  .navbar-links {
+    gap: 0.5rem;
+  }
+  .navbar-brand span {
+    display: none;
+  }
+}
+
+

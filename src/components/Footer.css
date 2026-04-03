@@ -46,3 +46,16 @@
 .footer-spacer {
   min-height: 1px;
 }
+
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    text-align: center;
+    justify-items: center;
+  }
+  .footer-links {
+    justify-content: center;
+  }
+}
+

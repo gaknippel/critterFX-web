@@ -1,7 +1,7 @@
 .preset-detail-wrapper {
   min-height: 100vh;
   color: hsl(var(--foreground));
-  padding: 1.5rem;
+  padding: 2rem;
   overflow: visible;
 }
 
@@ -27,7 +27,11 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: rgba(55, 80, 188, 0.397);
+  background: color-mix(in oklch, var(--card), transparent 40%) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  color: hsl(var(--foreground)) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
 .preset-detail-content {
@@ -53,11 +57,11 @@
 .preset-preview-large {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: hsl(var(--muted));
+  background: color-mix(in oklch, var(--card), transparent 40%);
   border-radius: 1rem;
   overflow: hidden;
-  border: 1px solid hsl(var(--border));
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .preset-preview-large img {
@@ -70,14 +74,17 @@
   width: 100%;
   font-size: 1.1rem;
   padding: 1.5rem;
-  background: var(--download-button-bg);
-  color: hsl(var(--primary-foreground));
+  background: color-mix(in oklch, var(--card), transparent 40%) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  color: hsl(var(--foreground)) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease !important;
 }
 
 .download-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  background: var(--download-button-bg-hover);
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
 }
 
 .how-to-install-btn {
@@ -85,19 +92,18 @@
   font-size: 1.1rem !important;
   padding: 1.5rem !important;
   height: auto !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: var(--foreground) !important;
+  background: color-mix(in oklch, var(--card), transparent 40%) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  color: hsl(var(--foreground)) !important;
   border-radius: 0.75rem !important;
-  transition: all 0.3s ease !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease !important;
   margin-top: 1rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
 .how-to-install-btn:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
 }
 
 .preset-details-section {
@@ -110,6 +116,11 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  background: color-mix(in oklch, var(--card), transparent 40%);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .preset-detail-title {
@@ -118,6 +129,10 @@
   font-family: "Instrument Sans", sans-serif;
   font-weight: 900;
   margin: 0;
+  display: block;
+  line-height: 1.15;
+  padding-bottom: 0.12em;
+  overflow: visible !important;
   color: hsl(var(--foreground));
 }
 
@@ -133,13 +148,19 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  background: color-mix(in oklch, var(--card), transparent 40%);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%);
+  border-radius: 0.75rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .detail-section {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
+  background: color-mix(in oklch, var(--card), transparent 40%);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%);
   border-radius: 0.75rem;
   padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .section-header {
@@ -147,7 +168,7 @@
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1rem;
-  color: hsl(var(--primary));
+  color: hsl(var(--foreground));
 }
 
 .section-header h2 {
@@ -175,7 +196,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem;
-  background: hsl(var(--muted));
+  background: hsl(var(--muted) / 0.3);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 35%);
   border-radius: 0.5rem;
 }
 
@@ -201,7 +223,8 @@
 
 .dependencies-list li {
   padding: 0.75rem 1rem;
-  background: hsl(var(--muted));
+  background: hsl(var(--muted) / 0.3);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 35%);
   border-radius: 0.5rem;
   color: hsl(var(--foreground));
 }
@@ -217,8 +240,9 @@
 
 
 .preset-tag {
-  background-color: var(--download-button-bg); 
-  color: hsl(var(--foreground)); 
+  background: hsl(var(--muted) / 0.3) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 35%) !important;
+  color: hsl(var(--foreground)) !important;
 }
 
 
@@ -242,7 +266,9 @@
 }
 
 .comment-card {
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  background: hsl(var(--muted) / 0.3) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 35%) !important;
+  box-shadow: none !important;
 }
 
 .download-count {
@@ -252,14 +278,10 @@
   margin-top: 1.1rem;
   padding: 0.9rem 1rem;
   border-radius: 0.9rem;
-  background:
-    linear-gradient(135deg, color-mix(in oklch, var(--primary), transparent 84%), transparent 70%),
-    hsl(var(--muted) / 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  width: fit-content;
-  min-width: 12rem;
+  background: hsl(var(--muted) / 0.3);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 35%);
+  width: 100%;
+  min-width: 0;
 }
 
 .download-count-icon {
@@ -269,9 +291,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--download-button-bg);
-  color: hsl(var(--primary-foreground));
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  background: hsl(var(--muted) / 0.45);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 35%);
+  color: hsl(var(--foreground));
   flex-shrink: 0;
 }
 
@@ -303,27 +325,28 @@
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 0.9rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 1px solid hsl(var(--border));
 }
 
 .comment-submit-btn {
-  background: var(--download-button-bg) !important;
-  color: white !important;
-  transition: all 0.2s ease !important;
+  background: color-mix(in oklch, var(--card), transparent 40%) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  color: hsl(var(--foreground)) !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
 .comment-submit-btn:hover:not(:disabled) {
-  background: var(--download-button-bg-hover) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
 }
 
 .comment-submit-btn:disabled {

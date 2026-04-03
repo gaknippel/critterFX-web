@@ -214,3 +214,18 @@
   from { opacity: 1; transform: translateY(0) scale(1); }
   to { opacity: 0; transform: translateY(-4px) scale(0.97); }
 }
+
+@media (max-width: 768px) {
+  .upload-wrapper {
+    padding: 1rem;
+  }
+  .upload-dropzone {
+    padding: 2rem 1rem;
+  }
+  .upload-form {
+    gap: 1rem;
+  }
+  .upload-submit-btn {
+    height: 2.75rem !important;
+  }
+}
