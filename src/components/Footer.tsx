@@ -37,7 +37,7 @@ export function Footer() {
         {/* Center: Copyright */}
         <div className="footer-center">
           <p className="footer-copy">
-            &copy; {new Date().getFullYear()} greyson knippel
+            &copy; {new Date().getFullYear()} crittercast
           </p>
         </div>
 

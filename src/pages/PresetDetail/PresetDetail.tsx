@@ -42,7 +42,7 @@ export default function PresetDetail() {
         event: 'INSERT',        // only listen for new comments
         schema: 'public', 
         table: 'comments',
-        filter: `preset_id=eq.${id}`  // only this preset's comments
+        filter: `preset_id=eq.${id}`  // only this presets comments
       }, 
       (payload) => 
       {
@@ -70,11 +70,17 @@ export default function PresetDetail() {
 
   const fetchComments = async () => {
     console.log('fetchComments called')
-    const {data, error} = await supabase
+
+  const { data, error } = await supabase
     .from('comments')
-    .select('*')
-    .eq('preset_id', id)  // only show approved presets
-    .order('created_at', { ascending: true })  // newest 
+    .select(`
+      *,
+      profiles (
+        avatar_url
+      )
+    `)
+    .eq('preset_id', id)
+    .order('created_at', { ascending: true })
 
   console.log('fetchComments result:', data, error)  // ← add this
 
@@ -345,9 +351,17 @@ export default function PresetDetail() {
                     <FadeContent key={comment.id} delay={index * 50}>
                       <Card className="comment-card bg-muted/20 border-none">
                         <CardHeader className="flex-row items-center gap-3 p-4 pb-2">
-                          <div className="comment-avatar">
-                            {comment.author_name[0].toUpperCase()}
-                          </div>
+                              <div className="comment-avatar">
+                                {comment.profiles?.avatar_url ? (
+                                  <img 
+                                    src={comment.profiles.avatar_url} 
+                                    alt={comment.author_name}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                                  />
+                                ) : (
+                                  comment.author_name[0].toUpperCase()
+                                )}
+                              </div>
                           <div className="flex flex-col">
                             <span className="font-semibold text-sm">{comment.author_name}</span>
                             <span className="text-xs text-muted-foreground">

@@ -41,4 +41,7 @@ export type Comment = {
   user_id: string
   author_name: string
   content: string
+  profiles?: {
+    avatar_url: string | null
+  }
 }
