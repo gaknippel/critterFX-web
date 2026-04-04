@@ -353,8 +353,8 @@
 }
 
 .comment-avatar {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 3.25rem;
+  height: 3.25rem;
   border-radius: 50%;
   background: hsl(var(--muted));
   color: hsl(var(--foreground));
