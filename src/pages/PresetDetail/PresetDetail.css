@@ -36,7 +36,7 @@
 
 .preset-detail-content {
   display: grid;
-  grid-template-columns: minmax(320px, 520px) minmax(0, 1fr);
+  grid-template-columns: minmax(360px, 680px) minmax(0, 1fr);
   gap: 3rem;
   max-width: 1400px;
   margin: 0 auto;
@@ -49,11 +49,10 @@
   flex-direction: column;
   gap: 1.5rem;
   position: fixed;
-  top: 2rem;
-  width: min(520px, calc(50vw - 3rem));
+  width: clamp(360px, 42vw, 680px);
   z-index: 10;
   top: 50%;
-  transform: translateY(-70%);
+  transform: translateY(-60%);
 }
 
 .preset-preview-large {

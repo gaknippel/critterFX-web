@@ -15,8 +15,8 @@ export default function Profile() {
   const { id } = useParams()
 
   // if no id in url, we're viewing our own profile
-  const profileId = id || user?.id
-  const isOwnProfile = !id || id === user?.id
+  const isOwnProfile = !id || id === user?.username
+  const profileId = isOwnProfile ? user?.id : null
 
   const [avatarUrl, setAvatarUrl] = useState('')
   const [username, setUsername] = useState('')
@@ -45,8 +45,8 @@ export default function Profile() {
     const { data: profileData } = await supabase
       .from('profiles')
       .select('id, username, created_at, bio, avatar_url')
-      .eq(isOwnProfile ? 'id': 'username', isOwnProfile ? profileId : id)
-      .single<{ username: string; created_at: string; bio: string | null; avatar_url: string | null }>()
+      .eq(isOwnProfile ? 'id': 'username', isOwnProfile ? user!.id : id)
+      .single<{ id: string; username: string; created_at: string; bio: string | null; avatar_url: string | null }>()
 
     if (profileData) {
       setUsername(profileData.username)
@@ -58,7 +58,7 @@ export default function Profile() {
     const { count: commentCount } = await supabase
       .from('comments')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', profileId)
+      .eq('user_id', profileData?.id)
     setCommentCount(commentCount || 0)
 
     const { count: presetCount } = await supabase
