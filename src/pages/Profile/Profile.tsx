@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Calendar, MessageSquare, Package, LogOut, Camera } from 'lucide-react'
@@ -12,8 +12,14 @@ import './Profile.css'
 export default function Profile() {
   const { user, signOut } = useUserContext()
   const navigate = useNavigate()
+  const { id } = useParams()
+
+  // if no id in url, we're viewing our own profile
+  const profileId = id || user?.id
+  const isOwnProfile = !id || id === user?.id
 
   const [avatarUrl, setAvatarUrl] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [createdAt, setCreatedAt] = useState('')
   const [commentCount, setCommentCount] = useState(0)
@@ -22,20 +28,28 @@ export default function Profile() {
   const [isLoading, setIsLoading] = useState(true)
   const [isEditingBio, setIsEditingBio] = useState(false)
 
+  useEffect(() => {
+    fetchProfileData()
+  }, [profileId])  // re-fetch when profileId changes
+
   const fetchProfileData = async () => {
-    if (!user) return
+    if (!profileId) return
     setIsLoading(true)
 
-    const { data: authData } = await supabase.auth.getUser()
-    setEmail(authData.user?.email || '')
+    // only fetch email for own profile
+    if (isOwnProfile) {
+      const { data: authData } = await supabase.auth.getUser()
+      setEmail(authData.user?.email || '')
+    }
 
     const { data: profileData } = await supabase
       .from('profiles')
-      .select('created_at, bio, avatar_url')
-      .eq('id', user.id)
-      .single<{ created_at: string; bio: string | null; avatar_url: string | null }>()
+      .select('id, username, created_at, bio, avatar_url')
+      .eq(isOwnProfile ? 'id': 'username', isOwnProfile ? profileId : id)
+      .single<{ username: string; created_at: string; bio: string | null; avatar_url: string | null }>()
 
     if (profileData) {
+      setUsername(profileData.username)
       setCreatedAt(profileData.created_at)
       setBio(profileData.bio || '')
       setAvatarUrl(profileData.avatar_url || '')
@@ -44,13 +58,13 @@ export default function Profile() {
     const { count: commentCount } = await supabase
       .from('comments')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
+      .eq('user_id', profileId)
     setCommentCount(commentCount || 0)
 
     const { count: presetCount } = await supabase
       .from('presets')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
+      .eq('user_id', profileId)
     setPresetCount(presetCount || 0)
 
     setIsLoading(false)
@@ -61,13 +75,8 @@ export default function Profile() {
       .from('profiles')
       .update({ bio })
       .eq('id', user!.id)
-
     if (!error) setIsEditingBio(false)
   }
-
-  useEffect(() => {
-    fetchProfileData()
-  }, [])
 
   const handleSignOut = async () => {
     await signOut()
@@ -161,37 +170,48 @@ export default function Profile() {
             {avatarUrl ? (
               <img src={avatarUrl} alt="avatar" className="profile-avatar-img" />
             ) : (
-              <span className="profile-avatar-letter">{user?.username[0].toUpperCase()}</span>
+              <span className="profile-avatar-letter">{username[0]?.toUpperCase()}</span>
             )}
           </div>
-          <input
-            id="avatar-input"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            className="profile-avatar-input"
-            onChange={handleAvatarUpload}
-          />
-          <label className="profile-avatar-upload" htmlFor="avatar-input">
-            <Camera size={14} />
-            <span>change avatar</span>
-          </label>
+          {/* only show avatar upload on own profile */}
+          {isOwnProfile && (
+            <>
+              <input
+                id="avatar-input"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="profile-avatar-input"
+                onChange={handleAvatarUpload}
+              />
+              <label className="profile-avatar-upload" htmlFor="avatar-input">
+                <Camera size={14} />
+                <span>change avatar</span>
+              </label>
+            </>
+          )}
         </div>
+
         <div className="profile-header-info">
-          <h1 className="profile-username">{user?.username}</h1>
-          <p className="profile-email">{email}</p>
+          <h1 className="profile-username">{username}</h1>
+          {/* only show email on own profile */}
+          {isOwnProfile && <p className="profile-email">{email}</p>}
           <p className="profile-joined">
             <Calendar size={12} className="inline mr-1" />
             joined {createdAt ? formatDate(createdAt) : '...'}
           </p>
         </div>
-        <Button
-          onClick={handleSignOut}
-          variant="destructive"
-          className="profile-signout profile-action-button profile-signout-button"
-        >
-          <LogOut size={16} className="mr-2" />
-          sign out
-        </Button>
+
+        {/* only show sign out on own profile */}
+        {isOwnProfile && (
+          <Button
+            onClick={handleSignOut}
+            variant="destructive"
+            className="profile-signout profile-action-button profile-signout-button"
+          >
+            <LogOut size={16} className="mr-2" />
+            sign out
+          </Button>
+        )}
       </div>
 
       <div className="profile-stats">
@@ -210,7 +230,8 @@ export default function Profile() {
       <div className="profile-info-section">
         <div className="profile-section-header">
           <h2 className="profile-section-title">bio</h2>
-          {!isEditingBio ? (
+          {/* only show edit button on own profile */}
+          {isOwnProfile && !isEditingBio && (
             <Button
               variant="outline"
               size="sm"
@@ -219,7 +240,8 @@ export default function Profile() {
             >
               edit
             </Button>
-          ) : (
+          )}
+          {isOwnProfile && isEditingBio && (
             <div className="profile-bio-actions">
               <Button
                 variant="ghost"
@@ -240,7 +262,7 @@ export default function Profile() {
           )}
         </div>
         <div className="profile-bio-content">
-          {isEditingBio ? (
+          {isOwnProfile && isEditingBio ? (
             <Textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
@@ -250,7 +272,9 @@ export default function Profile() {
           ) : bio ? (
             <p className="profile-bio-text">{bio}</p>
           ) : (
-            <p className="profile-bio-empty">no bio yet.</p>
+            <p className="profile-bio-empty">
+              {isOwnProfile ? 'no bio yet.' : 'this user has no bio yet.'}
+            </p>
           )}
         </div>
       </div>

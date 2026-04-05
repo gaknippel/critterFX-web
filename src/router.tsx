@@ -28,9 +28,13 @@ export const router = createBrowserRouter([
         element: <PresetDetail />,
       },
       {
-        path: 'profile',        // ← add this
+        path: 'profile',
         element: <Profile />
       },
+      {
+        path: 'profile/:id',
+        element: <Profile />,
+      }
     ]
   }
 ])

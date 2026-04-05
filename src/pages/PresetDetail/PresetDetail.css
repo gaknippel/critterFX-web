@@ -36,7 +36,7 @@
 
 .preset-detail-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(320px, 520px) minmax(0, 1fr);
   gap: 3rem;
   max-width: 1400px;
   margin: 0 auto;
@@ -48,10 +48,12 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  position: sticky;
-  top: 100px;
-  align-self: start;
+  position: fixed;
+  top: 2rem;
+  width: min(520px, calc(50vw - 3rem));
   z-index: 10;
+  top: 50%;
+  transform: translateY(-70%);
 }
 
 .preset-preview-large {
@@ -107,6 +109,7 @@
 }
 
 .preset-details-section {
+  grid-column: 2;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -368,6 +371,45 @@
   box-shadow: 0 0 0 1px rgb(255 255 255 / 0.18);
 }
 
+.clickable-author {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in oklch, hsl(var(--primary)) 72%, white 28%),
+    color-mix(in oklch, hsl(var(--primary)) 88%, transparent 12%)
+  );
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 2px;
+  transition:
+    color 0.22s ease,
+    transform 0.22s ease,
+    text-shadow 0.22s ease,
+    background-size 0.26s ease;
+}
+
+.clickable-author:hover {
+  color: color-mix(in oklch, hsl(var(--primary)) 88%, white 12%);
+  transform: translateY(-1px);
+  text-shadow: 0 0 14px hsl(var(--primary) / 0.22);
+  background-size: 100% 2px;
+}
+
+.tech-info-item .clickable-author {
+  color: oklch(100% 0.00011 271.152) !important;
+  font-weight: 700;
+  font-size: 120%;
+}
+
+.tech-info-item .clickable-author:hover {
+  color: oklch(69.103% 0.14942 255.648) !important;
+  font-size: 120%;
+}
+
 .comment-submit-btn {
   background: color-mix(in oklch, var(--card), transparent 40%) !important;
   border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
@@ -394,6 +436,11 @@
 
   .preset-preview-section {
     position: static;
+    width: 100%;
+  }
+
+  .preset-details-section {
+    grid-column: auto;
   }
 
   .preset-detail-title {

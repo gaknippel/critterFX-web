@@ -68,6 +68,17 @@ export default function PresetDetail() {
     window.scrollTo(0, 0)
   }
 
+  const handleAuthorClick = async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', userId)
+      .single()
+
+
+      if (data) navigate(`/profile/${data.username}`)
+  }
+
   const fetchComments = async () => {
     console.log('fetchComments called')
 
@@ -319,7 +330,12 @@ export default function PresetDetail() {
               </div>
               <div className="tech-info-item">
                 <span className="tech-label">author:</span>
-                <span className="tech-value">{preset.author_name || 'Unknown'}</span>
+                <span 
+                  className="tech-value clickable-author"
+                  onClick={() => handleAuthorClick(preset.user_id)}
+                >
+                  {preset.author_name || 'Unknown'}
+                </span>
               </div>
             </div>
           </div>
@@ -363,7 +379,12 @@ export default function PresetDetail() {
                                 )}
                               </div>
                           <div className="flex flex-col">
-                            <span className="font-semibold text-sm">{comment.author_name}</span>
+                              <span 
+                                className="font-semibold text-sm clickable-author"
+                                onClick={() => handleAuthorClick(comment.user_id)}
+                              >
+                                {comment.author_name}
+                              </span>
                             <span className="text-xs text-muted-foreground">
                               {new Date(comment.created_at).toLocaleDateString()}
                             </span>
