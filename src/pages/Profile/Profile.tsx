@@ -33,42 +33,43 @@ export default function Profile() {
   }, [profileId])  // re-fetch when profileId changes
 
   const fetchProfileData = async () => {
-    if (!profileId) return
-    setIsLoading(true)
+  console.log('fetchProfileData called')
+  if (!id && !user) return  // no id in url and not logged in = nothing to show
+  setIsLoading(true)
 
-    // only fetch email for own profile
-    if (isOwnProfile) {
-      const { data: authData } = await supabase.auth.getUser()
-      setEmail(authData.user?.email || '')
-    }
+  if (isOwnProfile) {
+    const { data: authData } = await supabase.auth.getUser()
+    setEmail(authData.user?.email || '')
+  }
 
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('id, username, created_at, bio, avatar_url')
-      .eq(isOwnProfile ? 'id': 'username', isOwnProfile ? user!.id : id)
-      .single<{ id: string; username: string; created_at: string; bio: string | null; avatar_url: string | null }>()
+  const { data: profileData } = await supabase
+    .from('profiles')
+    .select('id, username, created_at, bio, avatar_url')
+    .eq(isOwnProfile ? 'id' : 'username', isOwnProfile ? user!.id : id)
+    .single<{ id: string; username: string; created_at: string; bio: string | null; avatar_url: string | null }>()
 
-    if (profileData) {
-      setUsername(profileData.username)
-      setCreatedAt(profileData.created_at)
-      setBio(profileData.bio || '')
-      setAvatarUrl(profileData.avatar_url || '')
-    }
+  if (profileData) {
+    setUsername(profileData.username)
+    setCreatedAt(profileData.created_at)
+    setBio(profileData.bio || '')
+    setAvatarUrl(profileData.avatar_url || '')
 
-    const { count: commentCount } = await supabase
+    // use profileData.id for counts since we always need the UUID
+    const { count: cc } = await supabase
       .from('comments')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', profileData?.id)
-    setCommentCount(commentCount || 0)
+      .eq('user_id', profileData.id)
+    setCommentCount(cc || 0)
 
-    const { count: presetCount } = await supabase
+    const { count: pc } = await supabase
       .from('presets')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', profileId)
-    setPresetCount(presetCount || 0)
-
-    setIsLoading(false)
+      .eq('user_id', profileData.id)
+    setPresetCount(pc || 0)
   }
+
+  setIsLoading(false)
+}
 
   const handleSaveBio = async () => {
     const { error } = await supabase
