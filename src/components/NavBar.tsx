@@ -5,7 +5,7 @@ import './NavBar.css'
 
 export function NavBar() {
 
-  const { user, isLoading } = useUserContext()
+  const { user } = useUserContext()
   
 
   return (

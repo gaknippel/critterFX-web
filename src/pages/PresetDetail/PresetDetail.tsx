@@ -12,7 +12,7 @@ import { supabase, Comment } from '@/lib/supabase'
 import { toast } from 'sonner'
 import { useUserContext } from '@/context/UserContext'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import FadeContent from '@/components/FadeContent'
 
 
@@ -28,37 +28,6 @@ export default function PresetDetail() {
   const { user } = useUserContext()
   
 
-  // load preset data
-  useEffect(() => {
-    loadPreset()
-    fetchComments()
-
-
-     // realtime comment changing
-  const subscription = supabase
-    .channel('comments')
-    .on('postgres_changes', 
-      { 
-        event: 'INSERT',        // only listen for new comments
-        schema: 'public', 
-        table: 'comments',
-        filter: `preset_id=eq.${id}`  // only this presets comments
-      }, 
-      (payload) => 
-      {
-        // payload.new is the newly inserted comment row
-        setComments(prev => [...prev, payload.new as Comment])
-      }
-    )
-    .subscribe()
-
-  // cleanup when component unmounts
-  return () => 
-  {
-    subscription.unsubscribe()
-  }
-  }, [id])
-  
   const loadPreset = async () => {
     setIsLoading(true)
     const presets = await fetchPresets()
@@ -67,6 +36,45 @@ export default function PresetDetail() {
     setIsLoading(false  )
     window.scrollTo(0, 0)
   }
+
+  useEffect(() => {
+  loadPreset()
+  fetchComments()
+
+  const subscription = supabase
+    .channel('comments')
+    .on('postgres_changes', 
+      { 
+        event: 'INSERT',
+        schema: 'public', 
+        table: 'comments',
+        filter: `preset_id=eq.${id}`
+      }, 
+      async (payload) => {
+        const newComment = payload.new as Comment
+
+        // fetch the profile for this comment
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', newComment.user_id)
+          .single()
+
+        // attach the profile to the comment
+        const commentWithProfile = {
+          ...newComment,
+          profiles: profileData ? { avatar_url: profileData.avatar_url } : null
+        }
+
+        setComments(prev => [...prev, commentWithProfile as Comment])
+      }
+    )
+    .subscribe()
+
+  return () => {
+    subscription.unsubscribe()
+  }
+}, [id])
 
   const handleAuthorClick = async (userId: string) => {
     const { data } = await supabase

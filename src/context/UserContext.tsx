@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import { supabase } from '@/lib/supabase'
 
 
@@ -16,41 +16,64 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType | null>(null)
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
+export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-  console.log('setting up auth listener')
-  
-const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-  console.log('auth event:', event)
-  if (session?.user) {
-    const userId = session.user.id
-    // setTimeout breaks out of the auth callback, preventing deadlock
-    setTimeout(async () => {
+    const syncUserProfile = async (userId: string) => {
+      setIsLoading(true)
+
       const { data } = await supabase
         .from('profiles')
         .select('id, username')
         .eq('id', userId)
         .single()
-      
-      if (data) setUser(data)
-    }, 0)
-  } else {
-    setUser(null)
-  }
-})
 
-  return () => subscription.unsubscribe()
-}, [])
+      setUser(data ?? null)
+      setIsLoading(false)
+    }
+
+    const initializeUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (session?.user) {
+        await syncUserProfile(session.user.id)
+        return
+      }
+
+      setUser(null)
+      setIsLoading(false)
+    }
+
+    void initializeUser()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        // Break out of the auth callback before fetching profile data.
+        setTimeout(() => {
+          void syncUserProfile(session.user.id)
+        }, 0)
+        return
+      }
+
+      setUser(null)
+      setIsLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   const signOut = async () => {
     await supabase.auth.signOut()
     setUser(null)
   }
 
-    return (
+  return (
     <UserContext.Provider value={{ user, isLoading, signOut }}>
       {children}
     </UserContext.Provider>

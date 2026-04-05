@@ -150,7 +150,7 @@ export default function Home() {
         </aside>
 
         {/* presets grid */}
-        <FadeContent blur={false} duration={1000} easing="power2.out" initialOpacity={0} className='presets-main'>
+        <FadeContent blur={false} duration={1000} ease="power2.out" initialOpacity={0} className='presets-main'>
           <main className="presets-main">
             <ScrollArea className="presets-scroll">
               {isLoading ? (
