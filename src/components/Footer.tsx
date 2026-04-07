@@ -26,7 +26,7 @@ export function Footer() {
             <Coffee size={18} />
           </a>
           <a
-            href="mailto:gaknippel@hotmail.com"
+            href="mailto:crittercast@proton.me"
             className="footer-link"
             aria-label="Contact via Email"
           >
