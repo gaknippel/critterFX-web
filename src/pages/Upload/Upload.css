@@ -173,7 +173,7 @@
   height: 3rem !important;
   font-size: 1rem !important;
   font-weight: 600 !important;
-  background: linear-gradient(45deg, var(--primary), #8b5cf6) !important;
+  background: linear-gradient(45deg,#6f77e3 , #5c73f6) !important;
   border: none !important;
   color: white !important;
   box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3) !important;
