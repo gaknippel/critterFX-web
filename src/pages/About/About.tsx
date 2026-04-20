@@ -1,11 +1,5 @@
 import './About.css'
 import SplitText from '@/components/SplitText'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
 import { 
   Code2, 
   Heart, 
@@ -14,26 +8,6 @@ import {
   Globe
 } from 'lucide-react'
 
-const faqItems = [
-  {
-    value: "item-1",
-    trigger: "what is critterFX?",
-    content:
-      "critterFX is a hub for motion graphics presets, scripts, and editing tools. download cool stuff from here!",
-  },
-  {
-    value: "item-2",
-    trigger: "is it free to use?",
-    content:
-      "yes! most of the assets here are free for the community. i built this for everyone to share.",
-  },
-  {
-    value: "item-3",
-    trigger: "found a bug?",
-    content:
-      "there may be a decent amount of bugs! let me know via github or contact me by email! crittercast@proton.me",
-  },
-]
 
 export default function About() {
   return (
