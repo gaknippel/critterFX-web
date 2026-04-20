@@ -15,8 +15,10 @@ import {
   Layers, 
   LayoutGrid,
   Download,
+  ArrowUpDown,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { fetchPresets, categories, type Preset } from '@/lib/api'
 import SplitText from '@/components/SplitText'
@@ -39,6 +41,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [sortBy, setSortBy] = useState('newest')
   const navigate = useNavigate()
 
    useEffect(() => {
@@ -79,6 +82,21 @@ export default function Home() {
     return matchesCategory && matchesSearch
   })
 
+    const sortedPresets = [...filteredPresets].sort((a,b) => {
+  switch (sortBy){
+    case 'most_downloads':
+      return b.download_count - a.download_count
+    case 'newest':
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    case 'oldest':
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    case 'az':
+      return a.name.localeCompare(b.name)
+    default:
+      return 0
+  }
+})
+
   const handlePresetClick = (presetId: string) => {  // changed from number to string
     navigate(`/preset/${presetId}`)
   }
@@ -115,15 +133,30 @@ export default function Home() {
             className="search-input"
           />
           <Button 
+            type="button"
             variant="ghost" 
             size="sm"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="ml-2"
+            className="refresh-button"
+            aria-label={isRefreshing ? 'refreshing presets' : 'refresh presets'}
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           </Button>
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="sort-select">
+              <ArrowUpDown size={14} className="mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="newest">newest</SelectItem>
+              <SelectItem value="oldest">oldest</SelectItem>
+              <SelectItem value="most_downloads">most downloads</SelectItem>
+              <SelectItem value="az">a-z</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+
       </div>
 
       <div className="home-content-layout">
@@ -167,7 +200,7 @@ export default function Home() {
              </div>
               ) : (
                 <div className="presets-grid">
-                  {filteredPresets.map((preset) => (
+                  {sortedPresets.map((preset) => (
                     <div 
                       key={preset.id} 
                       className="preset-card"
