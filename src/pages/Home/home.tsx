@@ -23,6 +23,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { fetchPresets, categories, type Preset } from '@/lib/api'
 import SplitText from '@/components/SplitText'
 import FadeContent from '@/components/FadeContent'
+import { formatDate } from '@/lib/utils'
 
 const IconMap: Record<string, any> = {
   LayoutGrid,
@@ -218,9 +219,12 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="preset-info">
-                        <h3 className="preset-name">{preset.name}</h3>
-                        <p className="preset-author">by {preset.author_name || 'Unknown'}</p>
-                        <p className="preset-description">{preset.description}</p>
+                        <div className="preset-details">
+                          <h3 className="preset-name">{preset.name}</h3>
+                          <p className="preset-author">by {preset.author_name || 'Unknown'}</p>
+                          <p className="preset-description">{preset.description}</p>
+                        </div>
+                        <p className="preset-date">{formatDate(preset.created_at)}</p>
                       </div>
                     </div>
                   ))}

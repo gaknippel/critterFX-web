@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Calendar, MessageSquare, Package, LogOut, Camera } from 'lucide-react'
 import './Profile.css'
+import { formatDate } from '@/lib/utils'
 
 export default function Profile() {
   const { user, signOut } = useUserContext()
@@ -82,14 +83,6 @@ export default function Profile() {
   const handleSignOut = async () => {
     await signOut()
     navigate('/')
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
   }
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

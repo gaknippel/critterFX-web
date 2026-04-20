@@ -14,6 +14,7 @@ import { useUserContext } from '@/context/UserContext'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import FadeContent from '@/components/FadeContent'
+import { formatDate } from '@/lib/utils'
 
 
 export default function PresetDetail() {
@@ -344,6 +345,10 @@ export default function PresetDetail() {
                 >
                   {preset.author_name || 'Unknown'}
                 </span>
+              </div>
+              <div className="tech-info-item">
+                <span className="tech-label">uploaded on:</span>
+                <span className="tech-value">{formatDate(preset.created_at)}</span>
               </div>
             </div>
           </div>
