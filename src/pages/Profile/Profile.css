@@ -303,6 +303,56 @@
   gap: 1rem;
 }
 
+.preset-download-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(10, 10, 10, 0.96);
+  backdrop-filter: blur(8px);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.preset-download-badge svg {
+  flex-shrink: 0;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+}
+
+.preset-download-badge span {
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.preset-card:hover .preset-download-badge {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.preset-date {
+  font-size: 0.7rem;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.6;
+  margin: 0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 @media (max-width: 768px) {
   .profile-wrapper {
     padding: 1rem;

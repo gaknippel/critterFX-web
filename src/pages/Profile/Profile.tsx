@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
@@ -14,11 +13,10 @@ import { toast } from 'sonner'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Calendar, MessageSquare, Package, LogOut, Camera } from 'lucide-react'
+import { Calendar, MessageSquare, Package, LogOut, Camera, Download } from 'lucide-react'
 import './Profile.css'
 import { formatDate } from '@/lib/utils'
 import { type Preset } from '@/lib/api'
-
 
 export default function Profile() {
   const { user, signOut } = useUserContext()
@@ -363,10 +361,17 @@ export default function Profile() {
                       className="object-cover w-full h-full"
                       loading="lazy" 
                     />
+                    <div className="preset-download-badge">
+                      <Download size={12} />
+                      <span>{preset.download_count}</span>
+                    </div>
                   </div>
                   <CardHeader className="p-4">
-                    <CardTitle className="text-base font-semibold truncate">{preset.name}</CardTitle>
-                    <CardDescription className="line-clamp-2 text-xs">{preset.description}</CardDescription>
+                    <div className="flex flex-col gap-1">
+                      <CardTitle className="text-base font-semibold truncate">{preset.name}</CardTitle>
+                      <CardDescription className="line-clamp-2 text-xs">{preset.description}</CardDescription>
+                      <p className="preset-date mt-2">{formatDate(preset.created_at)}</p>
+                    </div>
                   </CardHeader>
                 </Card>
               ))}

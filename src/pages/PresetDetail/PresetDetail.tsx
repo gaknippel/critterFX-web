@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Download, Info, Package, FileCode, MessageSquare, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -20,6 +20,7 @@ import { formatDate } from '@/lib/utils'
 export default function PresetDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [preset, setPreset] = useState<Preset | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [comments, setComments] = useState<Comment[]>([]);
@@ -27,6 +28,14 @@ export default function PresetDetail() {
   const [isPostingComment, setIsPostingComment] = useState(false);
 
   const { user } = useUserContext()
+
+  const handleBack = () => {
+  if (window.history.length > 1 && location.key !== 'default') {
+    navigate(-1)
+  } else {
+    navigate('/')
+  }
+}
   
 
   const loadPreset = async () => {
@@ -174,7 +183,7 @@ export default function PresetDetail() {
       <div className="preset-detail-wrapper">
         <div className="preset-not-found">
           <h1>Preset not found</h1>
-          <Button onClick={() => navigate('/')}>
+            <Button onClick={handleBack}>
             <ArrowLeft className="mr-2" />
             back to browser
           </Button>
@@ -194,7 +203,7 @@ export default function PresetDetail() {
       <div className="preset-detail-content">
         <div className="preset-preview-section">
           <div className="preset-detail-header">
-            <Button variant="ghost" onClick={() => navigate('/')} className="back-button">
+            <Button variant="ghost" onClick={handleBack} className="back-button">
               <ArrowLeft className="mr-2" size={20} />
               back to browser
             </Button>
