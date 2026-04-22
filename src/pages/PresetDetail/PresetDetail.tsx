@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Check, Download, FileCode, Info, Loader2, MessageSquare, Package, Pencil, Send, Trash2, X } from 'lucide-react'
+import { ArrowLeft, Check, Download, FileCode, Info, MessageSquare, Package, Pencil, Send, Trash2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useState, useEffect } from 'react'
