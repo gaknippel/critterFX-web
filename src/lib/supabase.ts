@@ -44,4 +44,7 @@ export type Comment = {
   profiles?: {
     avatar_url: string | null
   }
+
+  edited_at?: string | null
+
 }

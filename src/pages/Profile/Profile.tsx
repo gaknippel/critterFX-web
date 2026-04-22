@@ -13,10 +13,11 @@ import { toast } from 'sonner'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Calendar, MessageSquare, Package, LogOut, Camera, Download } from 'lucide-react'
+import { Calendar, MessageSquare, Package, LogOut, Camera, Download, Pencil, Trash2, X, Check } from 'lucide-react'
 import './Profile.css'
 import { formatDate } from '@/lib/utils'
 import { type Preset } from '@/lib/api'
+import { type Comment } from '@/lib/supabase'
 
 export default function Profile() {
   const { user, signOut } = useUserContext()
@@ -39,8 +40,10 @@ export default function Profile() {
   const [showPresets, setShowPresets] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const [profilePresets, setProfilePresets] = useState<Preset[]>([])
-  const [profileComments, setProfileComments] = useState<any[]>([])
+  const [profileComments, setProfileComments] = useState<(Comment & { presets: { name: string } | null })[]>([])
   const [profileUserId, setProfileUserId] = useState('')
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
+  const [editingCommentText, setEditingCommentText] = useState('')
 
   useEffect(() => {
     fetchProfileData()
@@ -175,6 +178,59 @@ export default function Profile() {
     if (data) setProfileComments(data)
   }
 
+  const handleEditComment = (commentId: string, currentText: string) => {
+    setEditingCommentId(commentId)
+    setEditingCommentText(currentText)
+  }
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null)
+    setEditingCommentText('')
+  }
+
+  const handleSaveEdit = async (commentId: string) => {
+    const { error } = await supabase
+      .from('comments')
+      .update({ 
+        content: editingCommentText,
+        edited_at: new Date().toISOString()
+      })
+      .eq('id', commentId)
+
+    if (error) {
+      toast.error(error.message)
+      return
+    }
+
+    // update local state 
+    setProfileComments(prev => prev.map(c => 
+      c.id === commentId 
+        ? { ...c, content: editingCommentText, edited_at: new Date().toISOString() }
+        : c
+    ))
+
+    setEditingCommentId(null)
+    setEditingCommentText('')
+    toast.success('comment updated!')
+  }
+
+  const handleDeleteComment = async (commentId: string) => {
+    const { error } = await supabase
+      .from('comments')
+      .delete()
+      .eq('id', commentId)
+
+    if (error) {
+      toast.error(error.message)
+      return
+    }
+
+    // remove the comment from local state so UI updates instantly
+    setProfileComments(prev => prev.filter(c => c.id !== commentId))
+    setCommentCount(prev => prev - 1)
+    toast.success('comment deleted!')
+  }
+
   if (isLoading) {
     return (
       <div className="profile-wrapper" style={{ scrollbarGutter: 'stable' }}>
@@ -259,30 +315,34 @@ export default function Profile() {
           {/* only show edit button on own profile */}
           {isOwnProfile && !isEditingBio && (
             <Button
-              variant="outline"
-              size="sm"
-              className="profile-action-button profile-edit-button"
+              variant="ghost"
+              size="icon"
+              className="profile-action-button comment-action-btn"
               onClick={() => setIsEditingBio(true)}
+              title="Edit bio"
             >
-              edit
+              <Pencil size={14} />
             </Button>
           )}
           {isOwnProfile && isEditingBio && (
             <div className="profile-bio-actions">
               <Button
                 variant="ghost"
-                size="sm"
-                className="profile-action-button profile-cancel-button"
+                size="icon"
+                className="profile-action-button comment-action-btn"
                 onClick={() => setIsEditingBio(false)}
+                title="Cancel"
               >
-                cancel
+                <X size={14} />
               </Button>
               <Button
-                size="sm"
-                className="profile-action-button profile-save-button"
+                variant="ghost"
+                size="icon"
+                className="profile-action-button comment-action-btn"
                 onClick={handleSaveBio}
+                title="Save"
               >
-                save
+                <Check size={14} />
               </Button>
             </div>
           )}
@@ -388,13 +448,86 @@ export default function Profile() {
           ) : (
             <div className="flex flex-col gap-3">
               {profileComments.map(comment => (
-                <Card key={comment.id} className="bg-card/40 border-border/40 cursor-pointer hover:bg-card/60 transition-colors" onClick={() => navigate(`/preset/${comment.preset_id}`)}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-xs font-semibold text-primary">{comment.presets?.name || 'unknown preset'}</span>
-                      <span className="text-[10px] text-muted-foreground">{formatDate(comment.created_at)}</span>
+                <Card 
+                  key={comment.id} 
+                  className={`bg-card/40 border-border/40 transition-colors ${editingCommentId === comment.id ? '' : 'cursor-pointer hover:bg-card/60'}`} 
+                  onClick={() => {
+                    if (editingCommentId !== comment.id) {
+                      navigate(`/preset/${comment.preset_id}`)
+                    }
+                  }}
+                >
+                  <CardContent className="p-4 relative">
+                    <div className="flex justify-between items-start mb-2 pr-16">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-primary">{comment.presets?.name || 'unknown preset'}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {formatDate(comment.created_at)}
+                          {comment.edited_at && <span className="ml-1 italic">(edited)</span>}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-sm text-foreground/90">{comment.content}</p>
+
+                    {isOwnProfile && (
+                      <div className="comment-actions absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
+                        {editingCommentId === comment.id ? (
+                          <>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="comment-action-btn"
+                              onClick={handleCancelEdit}
+                              title="Cancel"
+                            >
+                              <X size={14} />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="comment-action-btn"
+                              onClick={() => handleSaveEdit(comment.id)}
+                              title="Save"
+                            >
+                              <Check size={14} />
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="comment-action-btn"
+                              onClick={() => handleEditComment(comment.id, comment.content)}
+                              title="Edit"
+                            >
+                              <Pencil size={14} />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="comment-action-btn comment-action-btn-danger"
+                              onClick={() => handleDeleteComment(comment.id)}
+                              title="Delete"
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {editingCommentId === comment.id ? (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <Textarea
+                          value={editingCommentText}
+                          onChange={(e) => setEditingCommentText(e.target.value)}
+                          className="min-h-[80px] mt-2"
+                          autoFocus
+                        />
+                      </div>
+                    ) : (
+                      <p className="text-sm text-foreground/90 break-words">{comment.content}</p>
+                    )}
                   </CardContent>
                 </Card>
               ))}

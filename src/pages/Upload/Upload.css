@@ -9,8 +9,16 @@
 }
 
 .sign-in-button {
-  color: white;
-  border: 0,0,0;
+  background: transparent !important;
+  border: 1px solid var(--primary) !important;
+  color: var(--primary) !important;
+  transition: all 0.2s ease !important;
+  border-radius: 0.5rem !important;
+}
+
+.sign-in-button:hover {
+  background: color-mix(in oklch, var(--primary), transparent 90%) !important;
+  border-color: var(--primary) !important;
 }
 
 .upload-wrapper {
@@ -173,7 +181,7 @@
   height: 3rem !important;
   font-size: 1rem !important;
   font-weight: 600 !important;
-  background: linear-gradient(45deg,#6f77e3 , #5c73f6) !important;
+  background: linear-gradient(45deg, var(--primary), #8b5cf6) !important;
   border: none !important;
   color: white !important;
   box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3) !important;

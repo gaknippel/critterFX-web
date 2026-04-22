@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Download, Info, Package, FileCode, MessageSquare, Send } from 'lucide-react'
+import { ArrowLeft, Check, Download, FileCode, Info, Loader2, MessageSquare, Package, Pencil, Send, Trash2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useState, useEffect } from 'react'
@@ -26,6 +26,8 @@ export default function PresetDetail() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState('');
   const [isPostingComment, setIsPostingComment] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
+  const [editingCommentText, setEditingCommentText] = useState('')
 
   const { user } = useUserContext()
 
@@ -154,6 +156,63 @@ export default function PresetDetail() {
   } finally {
     setIsPostingComment(false)
   }
+}
+
+const handleEditComment = (commentId: string, currentText: string) => {
+  setEditingCommentId(commentId)
+  setEditingCommentText(currentText)
+}
+
+const handleCancelEdit = () => {
+  setEditingCommentId(null)
+  setEditingCommentText('')
+}
+
+const handleSaveEdit = async (commentId: string) => {
+  const { error, data } = await supabase
+    .from('comments')
+    .update({ 
+      content: editingCommentText,
+      edited_at: new Date().toISOString()
+    })
+    .eq('id', commentId)
+    .select()  
+
+    console.log('update result:', data, error)
+    console.log('trying to update comment with id:', commentId)
+    console.log('current comments in state:', comments.map(c => c.id))
+
+  if (error) {
+    toast.error(error.message)
+    return
+  }
+
+  // update local state 
+  setComments(prev => prev.map(c => 
+    c.id === commentId 
+      ? { ...c, content: editingCommentText, edited_at: new Date().toISOString() }
+      : c
+  ))
+
+  setEditingCommentId(null)
+  setEditingCommentText('')
+  toast.success('comment updated!')
+}
+
+const handleDeleteComment = async (commentId: string) => {
+  const { error } = await supabase
+    .from('comments')
+    .delete()
+    .eq('id', commentId)
+
+  if (error) {
+    toast.error(error.message)
+    return
+  }
+
+  // remove the comment from local state so UI updates instantly
+  setComments(prev => prev.filter(c => c.id !== commentId))
+  toast.success('comment deleted!')
 }
   
     if (isLoading) {
@@ -387,33 +446,93 @@ export default function PresetDetail() {
                 ) : (
                   comments.map((comment, index) => (
                     <FadeContent key={comment.id} delay={index * 50}>
-                      <Card className="comment-card bg-muted/20 border-none">
-                        <CardHeader className="flex-row items-center gap-3 p-4 pb-2">
-                              <div className="comment-avatar">
-                                {comment.profiles?.avatar_url ? (
-                                  <img 
-                                    src={comment.profiles.avatar_url} 
-                                    alt={comment.author_name}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
-                                  />
-                                ) : (
-                                  comment.author_name[0].toUpperCase()
-                                )}
-                              </div>
-                          <div className="flex flex-col">
-                              <span 
-                                className="font-semibold text-sm clickable-author"
-                                onClick={() => handleAuthorClick(comment.user_id)}
-                              >
-                                {comment.author_name}
-                              </span>
+ <Card className="comment-card bg-muted/20 border-none">
+                        <CardHeader className="comment-card-header flex-row items-center gap-3 p-4 pb-2">
+                          <div className="comment-avatar">
+                            {comment.profiles?.avatar_url ? (
+                              <img 
+                                src={comment.profiles.avatar_url} 
+                                alt={comment.author_name}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                              />
+                            ) : (
+                              comment.author_name[0].toUpperCase()
+                            )}
+                          </div>
+                          <div className="comment-meta flex flex-col flex-1">
+                            <span 
+                              className="font-semibold text-sm clickable-author"
+                              onClick={() => handleAuthorClick(comment.user_id)}
+                            >
+                              {comment.author_name}
+                            </span>
                             <span className="text-xs text-muted-foreground">
                               {new Date(comment.created_at).toLocaleDateString()}
+                              {comment.edited_at && <span className="ml-1 italic">(edited)</span>}
                             </span>
                           </div>
+                          {user?.id === comment.user_id && (
+                            <div className="comment-actions">
+                              {editingCommentId === comment.id ? (
+                                <>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="comment-action-btn"
+                                    onClick={handleCancelEdit}
+                                    aria-label="Cancel editing comment"
+                                    title="Cancel"
+                                  >
+                                    <X size={14} />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="comment-action-btn"
+                                    onClick={() => handleSaveEdit(comment.id)}
+                                    aria-label="Save comment"
+                                    title="Save"
+                                  >
+                                    <Check size={14} />
+                                  </Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="comment-action-btn"
+                                    onClick={() => handleEditComment(comment.id, comment.content)}
+                                    aria-label="Edit comment"
+                                    title="Edit"
+                                  >
+                                    <Pencil size={14} />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="comment-action-btn comment-action-btn-danger"
+                                    onClick={() => handleDeleteComment(comment.id)}
+                                    aria-label="Delete comment"
+                                    title="Delete"
+                                  >
+                                    <Trash2 size={14} />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          )}
                         </CardHeader>
                         <CardContent className="px-4 pb-4">
-                          <p className="text-sm leading-relaxed">{comment.content}</p>
+                          {editingCommentId === comment.id ? (
+                            <Textarea
+                              value={editingCommentText}
+                              onChange={(e) => setEditingCommentText(e.target.value)}
+                              className="min-h-[80px]"
+                            />
+                          ) : (
+                            <p className="text-sm leading-relaxed">{comment.content}</p>
+                          )}
                         </CardContent>
                       </Card>
                     </FadeContent>
@@ -449,7 +568,7 @@ export default function PresetDetail() {
                   <Card className="bg-muted/10 border-dashed">
                     <CardContent className="p-4 flex items-center justify-between gap-4">
                       <p className="text-sm text-muted-foreground">sign in to leave a comment!</p>
-                      <Button onClick={() => navigate('/auth')} variant="outline" size="sm">
+                      <Button onClick={() => navigate('/auth')} variant="outline" size="sm" className="comment-sign-in-btn">
                         sign in
                       </Button>
                     </CardContent>

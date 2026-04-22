@@ -375,3 +375,37 @@
     width: 100%;
   }
 }
+
+.comment-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.comment-action-btn {
+  width: 1.9rem !important;
+  height: 1.9rem !important;
+  border-radius: 999px !important;
+  border: 1px solid transparent !important;
+  color: hsl(var(--muted-foreground)) !important;
+  opacity: 0.8;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    opacity 0.18s ease !important;
+}
+
+.comment-action-btn:hover {
+  background: hsl(var(--muted) / 0.55) !important;
+  border-color: color-mix(in oklch, hsl(var(--primary)), transparent 35%) !important;
+  color: hsl(var(--foreground)) !important;
+  opacity: 1;
+}
+
+.comment-action-btn svg {
+  stroke-width: 2.15;
+}
+
+.comment-action-btn-danger:hover {
+  color: hsl(var(--destructive)) !important;
+}

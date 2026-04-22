@@ -26,6 +26,12 @@
   overflow: hidden; /* prevents scrollbars */
   gap: 0 !important;
   padding: 0 !important;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .auth-header {
@@ -85,8 +91,8 @@
 .auth-submit-button {
   width: 100%;
   padding: 0.75rem 1rem !important;
-  background: linear-gradient(135deg, #6366f1, #314ab8) !important;
-  color: white !important;
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
   border: none !important;
   border-radius: 0.5rem !important;
   font-weight: 500 !important;
@@ -118,7 +124,7 @@
 .auth-toggle-link {
   background: transparent;
   border: none;
-  color: #bec4ff;
+  color: var(--primary);
   font-weight: 700;
   font-size: 110%;
   cursor: pointer;
@@ -139,7 +145,7 @@
 
 .auth-toggle-link:hover {
   color: #ffffff;
-  text-shadow: 0 0 8px rgba(129, 140, 248, 0.5);
+  text-shadow: 0 0 8px var(--primary);
 }
 
 /* Fallback classes for lucide-react */
