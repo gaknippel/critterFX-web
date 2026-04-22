@@ -347,28 +347,26 @@ return (
                 )}
               </div>
             </div>
+
+            <Button 
+              type="submit" 
+              disabled={isUploading || !presetFile || !gifFile || !category} 
+              className="w-full upload-submit-btn mt-6"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  uploading...
+                </>
+              ) : (
+                <>
+                  <UploadIcon className="mr-2 h-5 w-5" />
+                  submit for review
+                </>
+              )}
+            </Button>
           </form>
         </CardContent>
-        <CardFooter>
-          <Button 
-            form="upload-form"
-            type="submit" 
-            disabled={isUploading || !presetFile || !gifFile || !category} 
-            className="w-full upload-submit-btn"
-          >
-            {isUploading ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                uploading...
-              </>
-            ) : (
-              <>
-                <UploadIcon className="mr-2 h-5 w-5" />
-                submit for review
-              </>
-            )}
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   )

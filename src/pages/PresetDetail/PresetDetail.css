@@ -278,7 +278,7 @@
 
 .dependencies-list li:before {
   content: "•";
-  color: hsl(var(--primary));
+  color: var(--primary);
   font-weight: bold;
   display: inline-block;
   width: 1rem;
@@ -292,8 +292,8 @@
   background:
     linear-gradient(
       135deg,
-      color-mix(in oklch, hsl(var(--primary)) 12%, transparent),
-      hsl(var(--muted) / 0.55)
+      color-mix(in oklch, var(--primary), transparent 88%),
+      color-mix(in oklch, var(--muted), transparent 45%)
     ) !important;
   border: 1px solid rgb(255 255 255 / 0.9) !important;
   color: hsl(var(--foreground)) !important;
@@ -303,8 +303,8 @@
   text-transform: uppercase;
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 0.9),
-    inset 0 1px 0 hsl(var(--background) / 0.45),
-    0 10px 24px -18px hsl(var(--primary) / 0.8) !important;
+    inset 0 1px 0 color-mix(in oklch, var(--background), transparent 55%),
+    0 10px 24px -18px color-mix(in oklch, var(--primary), transparent 20%) !important;
   transition:
     transform 0.18s ease,
     border-color 0.18s ease,
@@ -318,13 +318,13 @@
   background:
     linear-gradient(
       135deg,
-      color-mix(in oklch, hsl(var(--primary)) 18%, transparent),
-      hsl(var(--muted) / 0.72)
+      color-mix(in oklch, var(--primary), transparent 82%),
+      color-mix(in oklch, var(--muted), transparent 28%)
     ) !important;
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255),
-    inset 0 1px 0 hsl(var(--background) / 0.55),
-    0 14px 28px -18px hsl(var(--primary) / 0.95) !important;
+    inset 0 1px 0 color-mix(in oklch, var(--background), transparent 45%),
+    0 14px 28px -18px color-mix(in oklch, var(--primary), transparent 5%) !important;
 }
 
 
@@ -388,8 +388,8 @@
 }
 
 .comment-action-btn:hover {
-  background: hsl(var(--muted) / 0.55) !important;
-  border-color: color-mix(in oklch, hsl(var(--primary)), transparent 35%) !important;
+  background: color-mix(in oklch, var(--muted), transparent 45%) !important;
+  border-color: color-mix(in oklch, var(--primary), transparent 35%) !important;
   color: hsl(var(--foreground)) !important;
   opacity: 1;
 }
@@ -409,7 +409,7 @@
   margin-top: 1.1rem;
   padding: 0.9rem 1rem;
   border-radius: 0.9rem;
-  background: hsl(var(--muted) / 0.3);
+  background: color-mix(in oklch, var(--muted), transparent 70%);
   border: 1px solid color-mix(in oklch, var(--border), transparent 35%);
   width: 100%;
   min-width: 0;
@@ -422,9 +422,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: hsl(var(--muted) / 0.45);
+  background: color-mix(in oklch, var(--muted), transparent 55%);
   border: 1px solid color-mix(in oklch, var(--border), transparent 35%);
-  color: hsl(var(--foreground));
+  color: var(--foreground);
   flex-shrink: 0;
 }
 
@@ -443,22 +443,22 @@
   font-size: 1.15rem;
   line-height: 1;
   font-weight: 800;
-  color: hsl(var(--foreground));
+  color: var(--foreground);
 }
 
 .download-count-label {
   font-size: 0.72rem;
   line-height: 1;
   letter-spacing: 0.04em;
-  color: hsl(var(--muted-foreground));
+  color: var(--muted-foreground);
 }
 
 .comment-avatar {
   width: 3.25rem;
   height: 3.25rem;
   border-radius: 50%;
-  background: hsl(var(--muted));
-  color: hsl(var(--foreground));
+  background: var(--muted);
+  color: var(--foreground);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -470,42 +470,51 @@
 }
 
 .clickable-author {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   position: relative;
   cursor: pointer;
-  color: inherit;
+  color: var(--primary);
+  font-weight: 700;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
-  background-image: linear-gradient(
-    90deg,
-    color-mix(in oklch, hsl(var(--primary)) 72%, white 28%),
-    color-mix(in oklch, hsl(var(--primary)) 88%, transparent 12%)
-  );
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  background-size: 0% 2px;
-  transition:
-    color 0.22s ease,
-    transform 0.22s ease,
-    text-shadow 0.22s ease,
-    background-size 0.26s ease;
+  gap: 0.15rem;
 }
 
 .clickable-author:hover {
-  color: color-mix(in oklch, hsl(var(--primary)) 88%, white 12%);
+  color: color-mix(in oklch, var(--primary), white 18%);
   transform: translateY(-1px);
-  text-shadow: 0 0 14px hsl(var(--primary) / 0.22);
-  background-size: 100% 2px;
+}
+
+.clickable-author::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.26s ease;
+  opacity: 0.8;
+}
+
+.clickable-author:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .tech-info-item .clickable-author {
-  color: oklch(100% 0.00011 271.152) !important;
-  font-weight: 700;
-  font-size: 120%;
+  font-size: 1.1rem;
 }
 
-.tech-info-item .clickable-author:hover {
-  color: oklch(69.103% 0.14942 255.648) !important;
-  font-size: 120%;
+.comment-meta .clickable-author {
+  color: var(--primary);
+}
+
+.comment-meta .clickable-author::after {
+  display: none;
 }
 
 .comment-submit-btn {
@@ -585,6 +594,256 @@
   }
 }
 
+.edit-preset-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+}
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.edit-hint {
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8rem;
+}
+
+.edit-input {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: hsl(var(--foreground));
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+}
+
+.edit-file-input {
+  color: hsl(var(--foreground));
+  font-size: 0.85rem;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.preset-owner-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.preset-delete-btn {
+  color: hsl(var(--destructive)) !important;
+  border-color: hsl(var(--destructive)) !important;
+}
+
+/* Upload styles for edit dialog */
+.upload-card {
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.upload-dropzone {
+  border: 2px dashed color-mix(in oklch, var(--border), transparent 20%);
+  border-radius: 0.75rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--muted), transparent 70%);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.dragover {
+  border-color: var(--primary);
+  background: color-mix(in oklch, var(--accent), transparent 50%);
+  color: var(--foreground);
+}
+
+.upload-dropzone.has-file {
+  border-color: var(--primary);
+  border-style: solid;
+  background: color-mix(in oklch, var(--primary), transparent 95%);
+}
+
+.upload-dropzone-prompt p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.upload-dropzone-sub {
+  font-size: 0.85rem !important;
+  margin-top: 0.5rem !important;
+  opacity: 0.7;
+}
+
+.upload-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.upload-file-name {
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.upload-file-size {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+.upload-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Consistent styling for all form inputs in upload-field */
+.upload-field input[data-slot="input"],
+.upload-field [data-slot="select-trigger"],
+.upload-field textarea {
+  background: color-mix(in oklch, var(--card), transparent 40%) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  border-radius: 0.625rem !important;
+  height: 2.75rem !important;
+  padding: 0 0.875rem !important;
+  width: 100% !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: var(--foreground) !important;
+  font-size: 0.9rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.upload-field textarea {
+  height: auto !important;
+  min-height: 120px !important;
+  padding: 0.75rem !important;
+}
+
+.upload-field input:hover,
+.upload-field [data-slot="select-trigger"]:hover {
+  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+}
+
+.upload-field input:focus-visible,
+.upload-field [data-slot="select-trigger"][data-state="open"] {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  background: color-mix(in oklch, var(--card), transparent 10%) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%) !important;
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  font-weight: 400;
+}
+
+.upload-submit-btn {
+  height: 3rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  background: hsl(var(--card)) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
+  color: white !important;
+  box-shadow: none !important;
+  transition: all 0.3s ease !important;
+  border-radius: 0.75rem !important;
+}
+
+.upload-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: color-mix(in oklch, var(--card), white 15%) !important;
+  box-shadow: none !important;
+}
+
+.upload-submit-btn:disabled {
+  background: var(--muted) !important;
+  box-shadow: none !important;
+  opacity: 0.5 !important;
+}
+
+.preset-edit-btn {
+  background: color-mix(in oklch, var(--card), transparent 40%) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  color: hsl(var(--foreground)) !important;
+  border-radius: 0.75rem !important;
+  transition: all 0.2s ease !important;
+  font-weight: 600 !important;
+}
+
+.preset-edit-btn:hover {
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
+  transform: translateY(-1px);
+}
+
+.preset-cancel-btn {
+  background: transparent !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 40%) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  border-radius: 0.75rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.preset-cancel-btn:hover {
+  background: color-mix(in oklch, var(--muted), transparent 80%) !important;
+  color: hsl(var(--foreground)) !important;
+  border-color: color-mix(in oklch, var(--border), transparent 10%) !important;
+}
+
+.preset-dialog-footer {
+  padding: 0 1.5rem 1.5rem !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-end !important;
+  gap: 0.75rem !important;
+  width: 100% !important;
+}
+
+.preset-dialog-btn {
+  min-height: 3rem !important;
+  min-width: 10.5rem !important;
+  padding-inline: 1.25rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+}
+
 @media (max-width: 480px) {
   .preset-detail-wrapper {
     padding: 0.75rem;
@@ -616,5 +875,14 @@
 
   .download-count-value {
     font-size: 1rem;
+  }
+
+  .preset-dialog-footer {
+    flex-direction: column-reverse !important;
+  }
+
+  .preset-dialog-btn {
+    width: 100% !important;
+    min-width: 0 !important;
   }
 }

@@ -34,7 +34,7 @@
 }
 
 .upload-card {
-  background: color-mix(in oklch, var(--card), transparent 50%);
+  background: color-mix(in oklch, var(--card), transparent 20%);
   backdrop-filter: blur(8px);
   border-color: color-mix(in oklch, var(--border), transparent 50%);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -181,18 +181,18 @@
   height: 3rem !important;
   font-size: 1rem !important;
   font-weight: 600 !important;
-  background: linear-gradient(45deg, var(--primary), #8b5cf6) !important;
-  border: none !important;
+  background: hsl(var(--card)) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
   color: white !important;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3) !important;
+  box-shadow: none !important;
   transition: all 0.3s ease !important;
   border-radius: 0.75rem !important;
 }
 
 .upload-submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4) !important;
-  filter: brightness(1.1);
+  background: color-mix(in oklch, var(--card), white 15%) !important;
+  box-shadow: none !important;
 }
 
 .upload-submit-btn:active:not(:disabled) {
