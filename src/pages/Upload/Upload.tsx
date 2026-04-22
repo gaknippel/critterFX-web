@@ -18,7 +18,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter
 } from '@/components/ui/card'
 import { supabase } from '@/lib/supabase'
 import { categories } from '@/lib/api'
