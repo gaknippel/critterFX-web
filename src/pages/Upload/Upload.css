@@ -34,9 +34,9 @@
 }
 
 .upload-card {
-  background: color-mix(in oklch, var(--card), transparent 20%);
+  background: color-mix(in oklch, var(--card), transparent 30%);
   backdrop-filter: blur(8px);
-  border-color: color-mix(in oklch, var(--border), transparent 50%);
+  border-color: color-mix(in oklch, var(--border), transparent 20%);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
