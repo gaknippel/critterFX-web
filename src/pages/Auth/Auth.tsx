@@ -63,7 +63,8 @@ export default function Auth() {
         email, 
         password,
         options: {
-        data: { username }
+        data: { username },
+        emailRedirectTo: 'https://critter-fx-web.vercel.app/confirm'
         }
       })
 

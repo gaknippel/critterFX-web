@@ -1,0 +1,20 @@
+.confirm-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  gap: 1rem;
+  text-align: center;
+  color: hsl(var(--foreground));
+}
+
+.confirm-icon {
+  width: 3rem;
+  height: 3rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.confirm-icon-success {
+  color: hsl(var(--primary));
+}
