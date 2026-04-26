@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { CheckCircle2, Loader2, XCircle, ArrowRight } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { CheckCircle2, Loader2, XCircle, } from 'lucide-react'
 import FadeContent from '@/components/FadeContent'
 import './Confirm.css'
 
 export default function Confirm() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
-  const navigate = useNavigate()
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
