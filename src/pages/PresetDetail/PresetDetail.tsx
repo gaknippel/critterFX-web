@@ -1,7 +1,7 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { 
   ArrowLeft, 
-  Check, 
+  Check,
   Download, 
   FileCode, 
   Info, 
@@ -11,8 +11,22 @@ import {
   Pencil, 
   Send, 
   Trash2, 
-  X, 
   User,
+  X,
+  Heart,
+  LayoutGrid,
+  Type,
+  MoveHorizontal,
+  Shapes,
+  Sparkles,
+  Image,
+  Code,
+  Layers,
+  Copy
+} from 'lucide-react'
+
+const iconMap: Record<string, any> = {
+  LayoutGrid,
   Type,
   MoveHorizontal,
   Shapes,
@@ -20,26 +34,32 @@ import {
   Image,
   Code,
   Layers
-} from 'lucide-react'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
+}
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useState, useEffect } from 'react'
 import './PresetDetail.css'
+import '@/components/presets/PresetManagementDialogs.css'
 import { fetchPresets, categories, type Preset } from '@/lib/api'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogDescription, DialogClose, DialogHeader } from "@/components/ui/dialog"
 import SplitText from '@/components/SplitText'
 import { Skeleton } from '@/components/ui/skeleton'
 import { supabase, Comment } from '@/lib/supabase'
 import { toast } from 'sonner'
 import { useUserContext } from '@/context/UserContext'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import FadeContent from '@/components/FadeContent'
-import { formatBytes } from '@/lib/utils'
+import { useFavorite } from '@/hooks/useFavorite'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { formatBytes, formatDate } from '@/lib/utils'
+import { PresetDeleteDialog, PresetEditDialog } from '@/components/presets/PresetManagementDialogs'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
+
+//for source code syntax stuff
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 export default function PresetDetail() {
   const { id } = useParams()
@@ -52,7 +72,7 @@ export default function PresetDetail() {
   const [isPostingComment, setIsPostingComment] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
   const [editingCommentText, setEditingCommentText] = useState('')
-
+//ybg stan
   //states for editing presets
   const [editPresetOpen, setEditPresetOpen] = useState(false)
   const [editName, setEditName] = useState('')
@@ -69,18 +89,15 @@ export default function PresetDetail() {
   const [isDeletingPreset, setIsDeletingPreset] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [gifDragOver, setGifDragOver] = useState(false)
+  const [sourceCode, setSourceCode] = useState<string | null>(null)
+  const [isLoadingSource, setIsLoadingSource] = useState(false)
+  const [showSource, setShowSource] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
 
-  const categoryIcons: Record<string, React.ReactNode> = {
-  textAnims: <Type className="size-4" />,
-  transitions: <MoveHorizontal className="size-4" />,
-  shapeAnims: <Shapes className="size-4" />,
-  effects: <Sparkles className="size-4" />,
-  backgrounds: <Image className="size-4" />,
-  scripts: <Code className="size-4" />,
-  compositions: <Layers className="size-4" />,
-}
+  const { isFavorited, toggleFavorite, isLoading: isFavLoading } = useFavorite(id || '')
+  const { user } = useUserContext()
 
-    useEffect(() => {
+  useEffect(() => {
   if (editPresetOpen && preset) {
     setEditName(preset.name)
     setEditDescription(preset.description)
@@ -94,9 +111,7 @@ export default function PresetDetail() {
   }
 }, [editPresetOpen])
 
-  const { user } = useUserContext()
-
-  const handlePresetFileChange = (file: File) => {
+const handlePresetFileChange = (file: File) => {
   const ext = file.name.split('.').pop()?.toLowerCase()
   if (!['ffx', 'jsx', 'aep'].includes(ext || '')) {
     toast.error('invalid file type! only .ffx, .jsx, and .aep files are allowed.')
@@ -136,27 +151,6 @@ const handleDeletePreset = async () => {
   }
 }
 
-const handlePresetDrop = (e: React.DragEvent) => {
-  e.preventDefault()
-  setDragOver(false)
-  const file = e.dataTransfer.files[0]
-  if (file) handlePresetFileChange(file)
-}
-
-const handleGifDrop = (e: React.DragEvent) => {
-  e.preventDefault()
-  setGifDragOver(false)
-  const file = e.dataTransfer.files[0]
-  if (!file) return
-
-  if (file.type !== 'image/gif') {
-    toast.error('preview must be a GIF!')
-    return
-  }
-
-  setEditGifFile(file)
-}
-
 const handleSavePreset = async () => {
   if (!preset || !user) return
   setIsSavingPreset(true)
@@ -186,6 +180,7 @@ const handleSavePreset = async () => {
 
       fileUrl = urlData.publicUrl
       fileName = editPresetFile.name
+      fileSize = formatBytes(editPresetFile.size)
     }
 
     // if user uploaded a new gif, replace the old one
@@ -239,26 +234,32 @@ const handleSavePreset = async () => {
 }
 
   const handleBack = () => {
-  if (window.history.length > 1 && location.key !== 'default') {
-    navigate(-1)
-  } else {
-    navigate('/')
+    if (window.history.length > 1 && location.key !== 'default') {
+      navigate(-1)
+    } else {
+      navigate('/')
+    }
   }
-}
-  
+
 
   const loadPreset = async () => {
     setIsLoading(true)
     const presets = await fetchPresets()
     const found = presets.find(p => p.id === id)
     setPreset(found || null)
+    setSourceCode(null)
+    setShowSource(false)
+    setIsCopied(false)
     setIsLoading(false  )
     window.scrollTo(0, 0)
   }
 
+
+
   useEffect(() => {
   loadPreset()
   fetchComments()
+
 
   const subscription = supabase
     .channel('comments')
@@ -294,6 +295,8 @@ const handleSavePreset = async () => {
     subscription.unsubscribe()
   }
 }, [id])
+
+
 
   const handleAuthorClick = async (userId: string) => {
     const { data } = await supabase
@@ -421,7 +424,43 @@ const handleDeleteComment = async (commentId: string) => {
   setComments(prev => prev.filter(c => c.id !== commentId))
   toast.success('comment deleted!')
 }
-  
+
+  const fetchSourceCode = async () => {
+    if(!preset?.file_url) return
+
+
+    if(sourceCode) {
+      setShowSource(!showSource)
+      return
+    }
+    setIsLoadingSource(true)
+    try {
+      const response = await fetch(preset?.file_url)
+      const text = await response.text()
+      setSourceCode(text)
+      setShowSource(true)
+    }
+    catch (error){
+      toast.error('failed fetching jsx source code :(')
+    }
+    finally{
+      setIsLoadingSource(false)
+    }
+
+  }
+
+  const handleCopyCode = async () => {
+    if (!sourceCode) return
+    try {
+      await navigator.clipboard.writeText(sourceCode)
+      setIsCopied(true)
+      toast.success('code copied to clipboard!')
+      setTimeout(() => setIsCopied(false), 2000)
+    } catch (err) {
+      toast.error('failed to copy code')
+    }
+  }
+
     if (isLoading) {
     return (
       <div className="preset-detail-wrapper">
@@ -448,8 +487,8 @@ const handleDeleteComment = async (commentId: string) => {
     return (
       <div className="preset-detail-wrapper">
         <div className="preset-not-found">
-          <h1>Preset not found</h1>
-            <Button onClick={handleBack}>
+          <h1>preset not found</h1>
+          <Button onClick={handleBack}>
             <ArrowLeft className="mr-2" />
             back to browser
           </Button>
@@ -462,7 +501,11 @@ const handleDeleteComment = async (commentId: string) => {
     console.log('All letters have animated!')
   }
 
-  const categoryName = categories.find(cat => cat.id === preset.category)?.name || preset.category
+
+
+  const categoryObj = categories.find(cat => cat.id === preset.category)
+  const categoryName = categoryObj?.name || preset.category
+  const CategoryIcon = categoryObj ? iconMap[categoryObj.icon] : LayoutGrid
 
   return (
     <div className="preset-detail-wrapper">
@@ -473,16 +516,17 @@ const handleDeleteComment = async (commentId: string) => {
               <ArrowLeft className="mr-2" size={20} />
               back to browser
             </Button>
+            <div className="preset-sidebar-info">
+              <div className="preset-info-item">
+                <Download size={14} />
+                <span>{preset.download_count}</span>
+              </div>
+            </div>
           </div>
           <div className="preset-preview-large">
             <img src={preset.previewGif} alt={preset.name} />
           </div>
 
-        <Dialog onOpenChange={(open) => {
-          if (open) {
-            supabase.rpc('increment_download_count', { preset_id: id })
-          }
-        }}></Dialog>
           <Dialog>
             <DialogTrigger asChild>
               <Button className="download-button" size="lg">
@@ -509,60 +553,133 @@ const handleDeleteComment = async (commentId: string) => {
               </div>
             </DialogContent>
           </Dialog>
-
           {preset.file_name.endsWith('.aep') && (
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="lg" className="w-full mt-4 how-to-install-btn">
-                  <Info className="mr-2 h-5 w-5" />
-                  how to install!!! (IMPORTANT)
+                <Button variant="outline" size="sm" className="w-full mt-2 how-to-install-btn">
+                  <Info className="mr-2 h-4 w-4" />
+                  how to install!!! (READ THIS)
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none">
-                <Card className="upload-card border-none shadow-2xl">
-                  <CardHeader className="pb-4">
-                    <DialogTitle className="text-2xl font-bold">
-                      <SplitText
-                        text="how to import compositions"
-                        delay={20}
-                        duration={1.5}
-                        ease="elastic.out(1, 0.3)"
-                        splitType="chars"
-                        from={{ opacity: 0, y: 5 }}
-                        to={{ opacity: 1, y: 0 }}
-                        threshold={0.1}
-                        rootMargin="-100px"
-                        textAlign="left"
-                      />
-                    </DialogTitle>
-                    <DialogDescription className="text-muted-foreground">
-                      this is a composition preset, so you have to import it manually through AE.
-                    </DialogDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                  <div className="rounded-lg overflow-hidden border">
-                    <img src="/howtoinstallcomps.gif" alt="import tutorial animation" className="w-full" />
+              <DialogContent showCloseButton={false} className="composition-import-dialog max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none">
+                <Card className="preset-manage-card composition-import-card shadow-2xl" style={{ padding: '2rem' }}>
+                  <DialogClose asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="preset-manage-close"
+                      aria-label="Close dialog"
+                    >
+                      <X size={16} />
+                    </Button>
+                  </DialogClose>
+                  <div className="preset-manage-form">
+                    <div className="preset-manage-file-info">
+                      <DialogTitle style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>
+                        <SplitText
+                          text="how to import compositions"
+                          delay={20}
+                          duration={1.5}
+                          ease="elastic.out(1, 0.3)"
+                          splitType="chars"
+                          from={{ opacity: 0, y: 5 }}
+                          to={{ opacity: 1, y: 0 }}
+                          threshold={0.1}
+                          rootMargin="-100px"
+                          textAlign="left"
+                        />
+                      </DialogTitle>
+                      <DialogDescription style={{ color: 'var(--muted-foreground)', marginTop: '0.5rem' }}>
+                        this is a composition preset, so you have to import it manually through AE.
+                      </DialogDescription>
+                    </div>
+
+                    <div className="preset-manage-field">
+                      <img src="/howtoinstallcomps.gif" alt="import tutorial animation" style={{ width: '100%', borderRadius: '0.75rem', border: '1px solid color-mix(in oklch, var(--border), transparent 50%)' }} />
+                    </div>
+
+                    <div className="preset-manage-field">
+                      <ol style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem' }}>
+                        <li>open AE</li>
+                        <li>go to <strong>file → import → file</strong> (or press <kbd style={{ padding: '0.25rem 0.5rem', background: 'color-mix(in oklch, var(--muted), transparent 50%)', borderRadius: '0.25rem', fontSize: '0.85rem' }}>Ctrl+I</kbd>)</li>
+                        <li>go to: <code style={{ padding: '0.25rem 0.5rem', background: 'color-mix(in oklch, var(--muted), transparent 50%)', borderRadius: '0.25rem', fontSize: '0.85rem' }}>{'Documents\\critterFX\\Compositions'}</code></li>
+                        <li>select <strong>{preset.file_name}</strong></li>
+                        <li>click "import" and use it in the project panel</li>
+                      </ol>
+                    </div>
+
+                    <div className="preset-manage-dropzone" style={{ padding: '1rem', textAlign: 'left', cursor: 'text' }}>
+                      <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                        💡 <strong>tip:</strong> you can also drag and drop the .aep file directly into the AE project panel.
+                      </p>
+                    </div>
                   </div>
-                  <ol className="space-y-2 list-decimal list-inside">
-                    <li className="text-sm">open AE</li>
-                    <li className="text-sm">go to <strong>file → import → file</strong> (or press <kbd className="px-2 py-1 bg-muted rounded text-xs">Ctrl+I</kbd>)</li>
-                    <li className="text-sm">go to: <code className="px-2 py-1 bg-muted rounded text-xs">Documents\critterFX\Compositions</code></li>
-                    <li className="text-sm">select <strong>{preset.file_name}</strong></li>
-                    <li className="text-sm">click "import" and use it in the project panel</li>
-                  </ol>
-                  <div className="bg-muted p-3 rounded-lg">
-                    <p className="text-sm text-muted-foreground">
-                      💡 <strong>tip:</strong> you can also drag and drop the .aep file directly into the AE project panel.
-                    </p>
+                </Card>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {preset.file_name.toLowerCase().endsWith('.jsx') && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="w-full mt-2 how-to-install-btn">
+                  <Info className="mr-2 h-4 w-4" />
+                  how to use script!!! (READ THIS)
+                </Button>
+              </DialogTrigger>
+              <DialogContent showCloseButton={false} className="script-import-dialog max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none">
+                <Card className="preset-manage-card script-import-card shadow-2xl" style={{ padding: '2rem' }}>
+                  <DialogClose asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="preset-manage-close"
+                      aria-label="Close dialog"
+                    >
+                      <X size={16} />
+                    </Button>
+                  </DialogClose>
+                  <div className="preset-manage-form">
+                    <div className="preset-manage-file-info">
+                      <DialogTitle style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>
+                        <SplitText
+                          text="how to run scripts"
+                          delay={20}
+                          duration={1.5}
+                          ease="elastic.out(1, 0.3)"
+                          splitType="chars"
+                          from={{ opacity: 0, y: 5 }}
+                          to={{ opacity: 1, y: 0 }}
+                          threshold={0.1}
+                          rootMargin="-100px"
+                          textAlign="left"
+                        />
+                      </DialogTitle>
+                      <DialogDescription style={{ color: 'var(--muted-foreground)', marginTop: '0.5rem' }}>
+                        scripts are cool! idk why adobe makes them kind of hard to access though
+                      </DialogDescription>
+                    </div>
+
+                    <div className="preset-manage-field">
+                      <img src="/howtoScript.gif" alt="script tutorial animation" style={{ width: '100%', borderRadius: '0.75rem', border: '1px solid color-mix(in oklch, var(--border), transparent 50%)' }} />
+                    </div>
+
+                    <div className="preset-manage-field">
+                      <ol style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem' }}>
+                        <li>open AE</li>
+                        <li>scripts should be in: <code style={{ padding: '0.25rem 0.5rem', background: 'color-mix(in oklch, var(--muted), transparent 50%)', borderRadius: '0.25rem', fontSize: '0.85rem' }}>{'Program Files\\Adobe\\Adobe After Effects [version]\\Support Files\\Scripts'}</code></li>
+                        <li>go to <strong>file → scripts → and file your script file!</strong></li>
+                      </ol>
+                    </div>
+
+                    <div className="preset-manage-dropzone" style={{ padding: '1rem', textAlign: 'left', cursor: 'text' }}>
+                      <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                        💡 <strong>tip:</strong> restart AE for scripts to appear in the <strong>file → scripts</strong> menu automatically!
+                      </p>
+                    </div>
                   </div>
-                  </CardContent>
-                  <DialogFooter className="p-6 pt-0 flex gap-2 sm:justify-end">
-                    <DialogClose asChild>
-                      <Button variant="ghost" className="preset-cancel-btn">
-                        close
-                      </Button>
-                    </DialogClose>
-                  </DialogFooter>
                 </Card>
               </DialogContent>
             </Dialog>
@@ -587,7 +704,10 @@ const handleDeleteComment = async (commentId: string) => {
                 onLetterAnimationComplete={handleAnimationComplete}
               />
             </h1>
-            <p className="preset-detail-category">{categoryName}</p>
+            <div className="flex items-center gap-2 preset-detail-category">
+              {CategoryIcon && <CategoryIcon size={16} className="opacity-70" />}
+              <span>{categoryName}</span>
+            </div>
               {user?.id === preset.user_id && (
                 <div className="preset-owner-actions">
                 <Button
@@ -612,261 +732,43 @@ const handleDeleteComment = async (commentId: string) => {
                 </div>
               )}
 
-              <Dialog open={deletePresetOpen} onOpenChange={setDeletePresetOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none">
-                  <Card className="upload-card border-none shadow-2xl">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="text-2xl font-bold">
-                        <SplitText
-                          text="delete preset"
-                          delay={20}
-                          duration={1.5}
-                          ease="elastic.out(1, 0.3)"
-                          splitType="chars"
-                          from={{ opacity: 0, y: 5 }}
-                          to={{ opacity: 1, y: 0 }}
-                          threshold={0.1}
-                          rootMargin="-100px"
-                          textAlign="left"
-                        />
-                      </CardTitle>
-                      <CardDescription className="text-muted-foreground">
-                        your preset will be gone forever! obviously do this at your will.
-                      </CardDescription>
-                    </CardHeader>
+              <PresetDeleteDialog
+                open={deletePresetOpen}
+                onOpenChange={setDeletePresetOpen}
+                preset={preset}
+                onDelete={handleDeletePreset}
+                isDeleting={isDeletingPreset}
+              />
 
-                    <CardContent className="space-y-6">
-                      <div className="upload-form">
-                        <div className="upload-field">
-                          <Label>what gets deleted:</Label>
-                          <div className="upload-dropzone has-file cursor-default" style={{ padding: '1.5rem', textAlign: 'left' }}>
-                            <div className="upload-file-info">
-                              <p className="upload-file-name">{preset.file_name}</p>
-                              <p className="upload-file-size">everything will be gone!</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-6">
-                        <Button onClick={handleDeletePreset} disabled={isDeletingPreset} className="upload-submit-btn w-full">
-                          {isDeletingPreset ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              deleting...
-                            </>
-                          ) : (
-                            <>
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              delete preset
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </DialogContent>
-              </Dialog>
-
-              <Dialog open={editPresetOpen} onOpenChange={setEditPresetOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none">
-                  <Card className="upload-card border-none shadow-2xl">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="text-2xl font-bold">
-                        <SplitText
-                          text="edit preset"
-                          delay={20}
-                          duration={1.5}
-                          ease="elastic.out(1, 0.3)"
-                          splitType="chars"
-                          from={{ opacity: 0, y: 5 }}
-                          to={{ opacity: 1, y: 0 }}
-                          threshold={0.1}
-                          rootMargin="-100px"
-                          textAlign="left"
-                        />
-                      </CardTitle>
-                      <CardDescription className="text-muted-foreground">
-                        edit your preset. leave things unchanged to keep original data.
-                      </CardDescription>
-                    </CardHeader>
-
-                    <CardContent>
-                      <form id="edit-preset-form" onSubmit={(e) => { e.preventDefault(); handleSavePreset(); }} className="upload-form">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* name */}
-                          <div className="upload-field">
-                            <Label htmlFor="edit-name">preset name</Label>
-                            <Input
-                              id="edit-name"
-                              value={editName}
-                              onChange={(e) => setEditName(e.target.value)}
-                              placeholder="preset name"
-                            />
-                          </div>
-
-                          {/* category */}
-                          <div className="upload-field">
-                            <Label htmlFor="edit-category">category</Label>
-                            <Select value={editCategory} onValueChange={setEditCategory}>
-                              <SelectTrigger id="edit-category" className="w-full category-select">
-                                <SelectValue placeholder="select a category" />
-                              </SelectTrigger>
-                              <SelectContent position="popper">
-                                {categories.filter(c => c.id !== 'all').map(c => (
-                                  <SelectItem key={c.id} value={c.id}>
-                                    <div className="flex items-center gap-2">
-                                      {categoryIcons[c.id]}
-                                      <span>{c.name}</span>
-                                    </div>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-
-                        {/* short description */}
-                        <div className="upload-field">
-                          <Label htmlFor="edit-description">short description</Label>
-                          <Input
-                            id="edit-description"
-                            value={editDescription}
-                            onChange={(e) => setEditDescription(e.target.value)}
-                            placeholder="short description"
-                          />
-                        </div>
-
-                        {/* long description */}
-                        <div className="upload-field">
-                          <Label htmlFor="edit-long-description">long description</Label>
-                          <Textarea
-                            id="edit-long-description"
-                            value={editLongDescription}
-                            onChange={(e) => setEditLongDescription(e.target.value)}
-                            placeholder="detailed description..."
-                            className="min-h-[120px]"
-                          />
-                        </div>
-
-                        {/* ae version */}
-                        <div className="upload-field">
-                          <Label htmlFor="edit-ae-version">after effects version</Label>
-                          <Input
-                            id="edit-ae-version"
-                            value={editAeVersion}
-                            onChange={(e) => setEditAeVersion(e.target.value)}
-                            placeholder="2023 or later"
-                          />
-                        </div>
-
-                        {/* tags and dependencies grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* tags */}
-                          <div className="upload-field">
-                            <Label htmlFor="edit-tags">tags <span className="upload-hint">(comma separated)</span></Label>
-                            <Input
-                              id="edit-tags"
-                              value={editTags}
-                              onChange={(e) => setEditTags(e.target.value)}
-                              placeholder="animation, text, smooth"
-                            />
-                          </div>
-
-                          {/* dependencies */}
-                          <div className="upload-field">
-                            <Label htmlFor="edit-dependencies">dependencies <span className="upload-hint">(comma separated)</span></Label>
-                            <Input
-                              id="edit-dependencies"
-                              value={editDependencies}
-                              onChange={(e) => setEditDependencies(e.target.value)}
-                              placeholder="none"
-                            />
-                          </div>
-                        </div>
-
-                        {/* preset file dropzone */}
-                        <div className="upload-field">
-                          <Label>preset file <span className="upload-hint">(leave empty to keep current: {preset.file_name})</span></Label>
-                          <div
-                            className={`upload-dropzone ${dragOver ? 'dragover' : ''} ${editPresetFile ? 'has-file' : ''}`}
-                            onDrop={handlePresetDrop}
-                            onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-                            onDragLeave={() => setDragOver(false)}
-                            onClick={() => document.getElementById('edit-preset-file-input')?.click()}
-                            style={{ padding: '2rem' }}
-                          >
-                            <input
-                              id="edit-preset-file-input"
-                              type="file"
-                              accept=".ffx,.jsx,.aep"
-                              style={{ display: 'none' }}
-                              onChange={(e) => e.target.files?.[0] && handlePresetFileChange(e.target.files[0])}
-                            />
-                            {editPresetFile ? (
-                              <div className="upload-file-info">
-                                <p className="upload-file-name">{editPresetFile.name}</p>
-                                <p className="upload-file-size">{formatBytes(editPresetFile.size)}</p>
-                              </div>
-                            ) : (
-                              <div className="upload-dropzone-prompt">
-                                <p>drag & drop your preset here</p>
-                                <p className="upload-dropzone-sub">or click to browse — .ffx, .jsx, .aep</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* gif file dropzone */}
-                        <div className="upload-field">
-                          <Label>preview gif <span className="upload-hint">(leave empty to keep current)</span></Label>
-                          <div
-                            className={`upload-dropzone ${gifDragOver ? 'dragover' : ''} ${editGifFile ? 'has-file' : ''}`}
-                            onDrop={handleGifDrop}
-                            onDragOver={(e) => { e.preventDefault(); setGifDragOver(true) }}
-                            onDragLeave={() => setGifDragOver(false)}
-                            onClick={() => document.getElementById('edit-gif-file-input')?.click()}
-                            style={{ padding: '2rem' }}
-                          >
-                            <input
-                              id="edit-gif-file-input"
-                              type="file"
-                              accept="image/gif"
-                              style={{ display: 'none' }}
-                              onChange={(e) => e.target.files?.[0] && setEditGifFile(e.target.files[0])}
-                            />
-                            {editGifFile ? (
-                              <div className="upload-file-info">
-                                <p className="upload-file-name">{editGifFile.name}</p>
-                                <p className="upload-file-size">{formatBytes(editGifFile.size)}</p>
-                              </div>
-                            ) : (
-                              <div className="upload-dropzone-prompt">
-                                <p>drag & drop preview gif here</p>
-                                <p className="upload-dropzone-sub">or click to browse — .gif only</p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <Button type="submit" disabled={isSavingPreset} className="upload-submit-btn w-full mt-6">
-                          {isSavingPreset ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              saving...
-                            </>
-                          ) : (
-                            <>
-                              <Check className="mr-2 h-4 w-4" />
-                              save changes
-                            </>
-                          )}
-                        </Button>
-                      </form>
-                    </CardContent>
-                  </Card>
-                </DialogContent>
-              </Dialog>
+              <PresetEditDialog
+                open={editPresetOpen}
+                onOpenChange={setEditPresetOpen}
+                preset={preset}
+                editName={editName}
+                setEditName={setEditName}
+                editDescription={editDescription}
+                setEditDescription={setEditDescription}
+                editLongDescription={editLongDescription}
+                setEditLongDescription={setEditLongDescription}
+                editCategory={editCategory}
+                setEditCategory={setEditCategory}
+                editTags={editTags}
+                setEditTags={setEditTags}
+                editDependencies={editDependencies}
+                setEditDependencies={setEditDependencies}
+                editAeVersion={editAeVersion}
+                setEditAeVersion={setEditAeVersion}
+                editPresetFile={editPresetFile}
+                onPresetFileChange={handlePresetFileChange}
+                editGifFile={editGifFile}
+                onGifFileChange={setEditGifFile}
+                dragOver={dragOver}
+                setDragOver={setDragOver}
+                gifDragOver={gifDragOver}
+                setGifDragOver={setGifDragOver}
+                onSave={handleSavePreset}
+                isSaving={isSavingPreset}
+              />
           </div>
 
 
@@ -877,6 +779,47 @@ const handleDeleteComment = async (commentId: string) => {
             ))}
           </div>
 
+          <div className="flex items-center gap-3">
+            <div className="preset-file-info">
+              <FileCode size={14} />
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <code className="preset-file-name">{preset.file_name}</code>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-[10px] font-medium py-1 px-2">
+                    <p>this is the file you search for in AE.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`favorite-btn-small ${isFavorited ? 'favorited' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (!user) {
+                    toast.error('sign in to favorite presets!')
+                    return
+                  }
+                  toggleFavorite()
+                }}
+                disabled={isFavLoading}
+              >
+                <Heart 
+                  size={18} 
+                  fill={isFavorited ? 'currentColor' : 'none'}
+                />
+              </Button>
+              <span className={`favorite-label ${isFavorited ? 'favorited' : ''}`}>
+                {isFavorited ? 'favorited' : 'add to favorites'}
+              </span>
+            </div>
+          </div>
+
           <div className="detail-section">
             <div className="section-header">
               <Info size={20} />
@@ -885,21 +828,67 @@ const handleDeleteComment = async (commentId: string) => {
             <p className="detail-text">{preset.long_description || preset.description}</p>
           </div>
 
-          <div className="detail-section">
-            <div className="section-header">
-              <Download size={20} />
-              <h2>downloads</h2>
-            </div>
-            <div className="download-count">
-              <div className="download-count-icon">
-                <Download size={16} />
-              </div>
-              <div className="download-count-copy">
-                <span className="download-count-value">{preset.download_count}</span>
-                <span className="download-count-label">downloads so far</span>
-              </div>
-            </div>
-          </div>
+              {preset.file_name.toLowerCase().endsWith('.jsx') && (
+                <div className="detail-section">
+                  <div className="section-header justify-between">
+                    <div className="flex items-center gap-3">
+                      <FileCode size={20} />
+                      <h2>source code</h2>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={fetchSourceCode}
+                      disabled={isLoadingSource}
+                      className="source-toggle-btn"
+                    >
+                      {isLoadingSource ? (
+                        <><Loader2 className="mr-2 h-4 w-4 animate-spin" />loading...</>
+                      ) : showSource ? 'hide code' : 'view code'}
+                    </Button>
+                  </div>
+                  
+                  {showSource && sourceCode && (
+                    <div className="source-code-container">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="copy-code-btn"
+                        onClick={handleCopyCode}
+                        title="Copy to clipboard"
+                      >
+                        {isCopied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                      </Button>
+                      <ScrollArea className="h-[600px] w-full rounded-md border border-white/10 bg-black/30 source-code-viewport selectable-code">
+                        <div className="min-w-max">
+                          <SyntaxHighlighter
+                            language="javascript"
+                            style={vscDarkPlus}
+                            showLineNumbers={true}
+                            lineNumberStyle={{ 
+                              minWidth: '3em', 
+                              paddingRight: '1em', 
+                              color: 'rgba(255,255,255,0.2)', 
+                              textAlign: 'right',
+                              userSelect: 'none' // line numbers should not be selectable
+                            }}
+                            customStyle={{
+                              margin: 0,
+                              padding: '1.5rem 1rem',
+                              background: 'transparent',
+                              fontSize: '0.85rem',
+                              overflow: 'visible',
+                              userSelect: 'text' // ensure code is selectable
+                            }}
+                          >
+                            {sourceCode}
+                          </SyntaxHighlighter>
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  )}
+                </div>
+              )}
 
           <div className="detail-section">
             <div className="section-header">
@@ -909,7 +898,7 @@ const handleDeleteComment = async (commentId: string) => {
             <div className="tech-info-grid">
               <div className="tech-info-item">
                 <span className="tech-label">after effects version:</span>
-                <span className="tech-value">{preset.ae_version || 'N/A'}</span>
+                <span className="tech-label">{preset.ae_version || 'N/A'}</span>
               </div>
               <div className="tech-info-item">
                 <span className="tech-label">file size:</span>
@@ -939,6 +928,7 @@ const handleDeleteComment = async (commentId: string) => {
               )) || <li>no dependencies</li>}
             </ul>
           </div>
+
 
           <div className="detail-section">
             <div className="section-header">
@@ -975,7 +965,7 @@ const handleDeleteComment = async (commentId: string) => {
                               {comment.author_name}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {new Date(comment.created_at).toLocaleDateString()}
+                              {formatDate(comment.created_at)}
                               {comment.edited_at && <span className="ml-1 italic">(edited)</span>}
                             </span>
                           </div>
@@ -1091,3 +1081,5 @@ const handleDeleteComment = async (commentId: string) => {
     </div>
   )
 }
+
+

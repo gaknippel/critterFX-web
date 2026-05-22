@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { FileBox, Upload, User, ToyBrick, FileQuestionMark } from 'lucide-react'
+import { Download, FileBox, Upload, User, ToyBrick, FileQuestionMark } from 'lucide-react'
 import { useUserContext } from '@/context/UserContext'
 import './NavBar.css'
 
@@ -13,7 +13,7 @@ export function NavBar() {
       <div className="navbar-fade-mask" />
       
       <nav className="navbar-content">
-        <Link to="/" className="navbar-brand">
+        <Link to="/landing" className="navbar-brand">
           <div className="navbar-logo-container">
             <ToyBrick size={22} className="navbar-logo-icon" />
           </div>
@@ -21,6 +21,10 @@ export function NavBar() {
         </Link>
 
         <div className="navbar-links">
+          <Link to="/landing" className="navbar-link">
+            <Download size={18} />
+            <span>Install</span>
+          </Link>
           <Link to="/" className="navbar-link">
             <FileBox size={18} />
             <span>Presets</span>

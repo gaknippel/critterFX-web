@@ -1,8 +1,8 @@
 .preset-detail-wrapper {
-  --preset-detail-max-width: 1280px;
+  --preset-detail-max-width: 1440px;
   --preset-detail-side-padding: clamp(0.875rem, 2vw, 2rem);
-  --preset-detail-gap: clamp(1.5rem, 3vw, 2.5rem);
-  --preset-preview-width: clamp(320px, 40vw, 560px);
+  --preset-detail-gap: clamp(1.5rem, 3.5vw, 3rem);
+  --preset-preview-width: clamp(340px, 45vw, 680px);
   min-height: 100vh;
   color: hsl(var(--foreground));
   padding: var(--preset-detail-side-padding);
@@ -36,6 +36,21 @@
   color: hsl(var(--foreground)) !important;
   border-radius: 0.75rem !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.back-button:hover {
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+  border-color: color-mix(in oklch, var(--border), transparent 10%) !important;
+  transform: translateX(-4px);
+}
+
+.back-button svg {
+  transition: transform 0.2s ease;
+}
+
+.back-button:hover svg {
+  transform: translateX(-2px);
 }
 
 .preset-detail-content {
@@ -67,18 +82,61 @@
 
 .preset-preview-large {
   width: 100%;
+  height: auto;
   aspect-ratio: 16 / 9;
   background: color-mix(in oklch, var(--card), transparent 40%);
   border-radius: 1rem;
   overflow: hidden;
   border: 1px solid color-mix(in oklch, var(--border), transparent 20%);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .preset-preview-large img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+}
+
+.preset-detail-header {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.preset-sidebar-info {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.35rem 0.75rem;
+  background: color-mix(in oklch, var(--card), transparent 40%);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+
+.preset-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.preset-info-item svg {
+  opacity: 1;
+  color: white;
 }
 
 .download-button {
@@ -138,21 +196,41 @@
 
 .how-to-install-btn {
   width: 100% !important;
-  font-size: 1.1rem !important;
-  padding: 1.5rem !important;
+  font-size: 0.85rem !important;
+  padding: 0.6rem 1rem !important;
   height: auto !important;
-  background: color-mix(in oklch, var(--card), transparent 40%) !important;
-  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  background: color-mix(in oklch, var(--primary), transparent 90%) !important;
+  border: 1px solid color-mix(in oklch, var(--primary), transparent 60%) !important;
   color: hsl(var(--foreground)) !important;
-  border-radius: 0.75rem !important;
-  transition: background-color 0.2s ease, border-color 0.2s ease !important;
-  margin-top: 1rem !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s ease !important;
+  margin-top: 0.75rem !important;
+  box-shadow: 0 0 10px -5px color-mix(in oklch, var(--primary), transparent 50%) !important;
+  font-weight: 600 !important;
 }
 
 .how-to-install-btn:hover {
-  background: color-mix(in oklch, var(--card), transparent 20%) !important;
-  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
+  background: color-mix(in oklch, var(--primary), transparent 80%) !important;
+  border-color: var(--primary) !important;
+  transform: translateY(-1px);
+}
+
+.composition-import-dialog,
+.script-import-dialog {
+  width: min(calc(100vw - 2rem), 40rem) !important;
+  max-width: 40rem !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.composition-import-dialog::-webkit-scrollbar,
+.script-import-dialog::-webkit-scrollbar {
+  display: none;
+}
+
+.composition-import-card,
+.script-import-card {
+  background: linear-gradient(to bottom, var(--bg-top), var(--bg-bottom)) !important;
 }
 
 .preset-details-section {
@@ -171,9 +249,65 @@
 .preset-header-info {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
   padding: 0 0 0.5rem;
+  position: relative;
 }
+
+.favorite-btn-small {
+  width: 2rem !important;
+  height: 2rem !important;
+  border-radius: 50% !important;
+  color: hsl(var(--muted-foreground)) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  z-index: 10;
+}
+
+.favorite-btn-small:hover {
+  background: color-mix(in oklch, var(--accent), transparent 50%) !important;
+  color: #ff4d6d !important;
+  transform: scale(1.1);
+}
+
+.favorite-btn-small.favorited {
+  color: #ff4d6d !important;
+}
+
+.favorite-btn-small.favorited:hover {
+  background: color-mix(in oklch, #ff4d6d, transparent 90%) !important;
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.favorite-btn-small svg {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.favorite-btn-small:active svg {
+  transform: scale(0.8);
+}
+
+.favorite-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(var(--muted-foreground));
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.favorite-label.favorited {
+  color: #ff4d6d;
+  opacity: 1;
+}
+
+
 
 .preset-detail-title {
   font-size: clamp(1.85rem, 3vw, 2.5rem);
@@ -189,6 +323,10 @@
 }
 
 .preset-detail-category {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   font-size: 1rem;
   color: hsl(var(--muted-foreground));
   text-transform: uppercase;
@@ -201,6 +339,37 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   padding: 0.25rem 0 0;
+}
+
+.preset-file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: color-mix(in oklch, var(--muted), transparent 70%);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 35%);
+  border-radius: 0.75rem;
+  width: fit-content;
+  margin: 0.25rem 0;
+  transition: all 0.2s ease;
+}
+
+.preset-file-info:hover {
+  background: color-mix(in oklch, var(--muted), transparent 50%);
+  border-color: color-mix(in oklch, var(--primary), transparent 50%);
+}
+
+.preset-file-info svg {
+  color: var(--primary);
+  opacity: 0.8;
+}
+
+.preset-file-name {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85rem;
+  color: hsl(var(--foreground));
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .detail-section {
@@ -257,6 +426,15 @@
 .tech-value {
   color: hsl(var(--foreground));
   font-size: 0.95rem;
+}
+
+.compatibility-icon {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: default;
+}
+
+.compatibility-icon:hover {
+  transform: scale(1.3) rotate(8deg);
 }
 
 .dependencies-list {
@@ -594,206 +772,17 @@
   }
 }
 
-.edit-preset-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  padding-top: 0.5rem;
-}
-
-.edit-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.edit-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-}
-
-.edit-hint {
-  font-weight: 400;
-  color: hsl(var(--muted-foreground));
-  font-size: 0.8rem;
-}
-
-.edit-input {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  color: hsl(var(--foreground));
-  font-size: 0.9rem;
-  transition: border-color 0.2s ease;
-}
-
-.edit-input:focus {
-  outline: none;
-  border-color: hsl(var(--primary));
-}
-
-.edit-file-input {
-  color: hsl(var(--foreground));
-  font-size: 0.85rem;
-}
-
-.edit-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding-top: 0.5rem;
-}
-
 .preset-owner-actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
 
-.preset-delete-btn {
-  color: hsl(var(--destructive)) !important;
-  border-color: hsl(var(--destructive)) !important;
-}
-
 /* Upload styles for edit dialog */
 .upload-card {
   background: color-mix(in oklch, var(--card), transparent 20%) !important;
-  backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(12px);
   border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
-}
-
-.upload-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.upload-dropzone {
-  border: 2px dashed color-mix(in oklch, var(--border), transparent 20%);
-  border-radius: 0.75rem;
-  padding: 3rem 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--muted-foreground);
-  background: color-mix(in oklch, var(--muted), transparent 70%);
-}
-
-.upload-dropzone:hover,
-.upload-dropzone.dragover {
-  border-color: var(--primary);
-  background: color-mix(in oklch, var(--accent), transparent 50%);
-  color: var(--foreground);
-}
-
-.upload-dropzone.has-file {
-  border-color: var(--primary);
-  border-style: solid;
-  background: color-mix(in oklch, var(--primary), transparent 95%);
-}
-
-.upload-dropzone-prompt p {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.upload-dropzone-sub {
-  font-size: 0.85rem !important;
-  margin-top: 0.5rem !important;
-  opacity: 0.7;
-}
-
-.upload-file-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.upload-file-name {
-  font-weight: 600;
-  color: var(--foreground);
-  margin: 0;
-}
-
-.upload-file-size {
-  font-size: 0.85rem;
-  color: var(--muted-foreground);
-  margin: 0;
-}
-
-.upload-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* Consistent styling for all form inputs in upload-field */
-.upload-field input[data-slot="input"],
-.upload-field [data-slot="select-trigger"],
-.upload-field textarea {
-  background: color-mix(in oklch, var(--card), transparent 40%) !important;
-  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
-  border-radius: 0.625rem !important;
-  height: 2.75rem !important;
-  padding: 0 0.875rem !important;
-  width: 100% !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  color: var(--foreground) !important;
-  font-size: 0.9rem !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-.upload-field textarea {
-  height: auto !important;
-  min-height: 120px !important;
-  padding: 0.75rem !important;
-}
-
-.upload-field input:hover,
-.upload-field [data-slot="select-trigger"]:hover {
-  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
-  background: color-mix(in oklch, var(--card), transparent 20%) !important;
-}
-
-.upload-field input:focus-visible,
-.upload-field [data-slot="select-trigger"][data-state="open"] {
-  outline: none !important;
-  border-color: var(--primary) !important;
-  background: color-mix(in oklch, var(--card), transparent 10%) !important;
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%) !important;
-}
-
-.upload-hint {
-  font-size: 0.8rem;
-  color: var(--muted-foreground);
-  font-weight: 400;
-}
-
-.upload-submit-btn {
-  height: 3rem !important;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  background: hsl(var(--card)) !important;
-  border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
-  color: white !important;
-  box-shadow: none !important;
-  transition: all 0.3s ease !important;
-  border-radius: 0.75rem !important;
-}
-
-.upload-submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  background: color-mix(in oklch, var(--card), white 15%) !important;
-  box-shadow: none !important;
-}
-
-.upload-submit-btn:disabled {
-  background: var(--muted) !important;
-  box-shadow: none !important;
-  opacity: 0.5 !important;
 }
 
 .preset-edit-btn {
@@ -825,23 +814,78 @@
   border-color: color-mix(in oklch, var(--border), transparent 10%) !important;
 }
 
-.preset-dialog-footer {
-  padding: 0 1.5rem 1.5rem !important;
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: flex-end !important;
-  gap: 0.75rem !important;
-  width: 100% !important;
+/* high specificity override for global user-select: none */
+.selectable-code, 
+.selectable-code *,
+.selectable-code span {
+  -webkit-user-select: text !important;
+  user-select: text !important;
 }
 
-.preset-dialog-btn {
-  min-height: 3rem !important;
-  min-width: 10.5rem !important;
-  padding-inline: 1.25rem !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex: 0 0 auto !important;
+/* Source code section styles */
+.source-code-container {
+  position: relative;
+  margin-top: 0.5rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.copy-code-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 20;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: 0.5rem !important;
+  background: rgba(20, 20, 20, 0.6) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  transition: all 0.2s ease !important;
+}
+
+.copy-code-btn:hover {
+  background: rgba(40, 40, 40, 0.8) !important;
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-1px);
+}
+
+.copy-code-btn:active {
+  transform: translateY(0);
+}
+
+.source-toggle-btn {
+  height: 2.25rem !important;
+  padding: 0 1rem !important;
+  font-size: 0.8rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700 !important;
+  color: var(--primary) !important;
+  border: 1px solid color-mix(in oklch, var(--primary), transparent 80%) !important;
+  background: color-mix(in oklch, var(--primary), transparent 95%) !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.source-toggle-btn:hover {
+  background: color-mix(in oklch, var(--primary), transparent 90%) !important;
+  border-color: var(--primary) !important;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 480px) {
@@ -859,8 +903,8 @@
   }
 
   .how-to-install-btn {
-    padding: 1rem !important;
-    font-size: 0.98rem !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.8rem !important;
   }
 
   .download-count {
@@ -875,14 +919,5 @@
 
   .download-count-value {
     font-size: 1rem;
-  }
-
-  .preset-dialog-footer {
-    flex-direction: column-reverse !important;
-  }
-
-  .preset-dialog-btn {
-    width: 100% !important;
-    min-width: 0 !important;
   }
 }
