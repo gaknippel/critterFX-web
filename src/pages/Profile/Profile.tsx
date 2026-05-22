@@ -3,9 +3,6 @@ import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,11 +10,43 @@ import { toast } from 'sonner'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Calendar, MessageSquare, Package, LogOut, Camera, Download, Pencil, Trash2, X, Check } from 'lucide-react'
+import {
+  Calendar,
+  MessageSquare,
+  Package,
+  Heart,
+  LogOut,
+  Camera,
+  Download,
+  Pencil,
+  Trash2,
+  X,
+  Check,
+  LayoutGrid,
+  Type,
+  MoveHorizontal,
+  Shapes,
+  Sparkles,
+  Image,
+  Code,
+  Layers,
+} from 'lucide-react'
 import './Profile.css'
-import { formatDate } from '@/lib/utils'
-import { type Preset } from '@/lib/api'
+import { formatBytes, formatDate } from '@/lib/utils'
+import { type Preset, categories } from '@/lib/api'
 import { type Comment } from '@/lib/supabase'
+import { PresetDeleteDialog, PresetEditDialog } from '@/components/presets/PresetManagementDialogs'
+
+const IconMap: Record<string, any> = {
+  LayoutGrid,
+  Type,
+  MoveHorizontal,
+  Shapes,
+  Sparkles,
+  Image,
+  Code,
+  Layers,
+}
 
 export default function Profile() {
   const { user, signOut } = useUserContext()
@@ -44,10 +73,47 @@ export default function Profile() {
   const [profileUserId, setProfileUserId] = useState('')
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
   const [editingCommentText, setEditingCommentText] = useState('')
+  const [editingPreset, setEditingPreset] = useState<Preset | null>(null)
+  const [editPresetOpen, setEditPresetOpen] = useState(false)
+  const [deletePresetOpen, setDeletePresetOpen] = useState(false)
+  const [editName, setEditName] = useState('')
+  const [editDescription, setEditDescription] = useState('')
+  const [editLongDescription, setEditLongDescription] = useState('')
+  const [editCategory, setEditCategory] = useState('')
+  const [editTags, setEditTags] = useState('')
+  const [editDependencies, setEditDependencies] = useState('')
+  const [editAeVersion, setEditAeVersion] = useState('')
+  const [editPresetFile, setEditPresetFile] = useState<File | null>(null)
+  const [editGifFile, setEditGifFile] = useState<File | null>(null)
+  const [isSavingPreset, setIsSavingPreset] = useState(false)
+  const [isDeletingPreset, setIsDeletingPreset] = useState(false)
+  const [dragOver, setDragOver] = useState(false)
+  const [gifDragOver, setGifDragOver] = useState(false)
+  const [showFavorites, setShowFavorites] = useState(false)
+  const [profileFavorites, setProfileFavorites] = useState<Preset[]>([])
+  const [favoriteCount, setFavoriteCount] = useState(0)
+  
+  const [isFetchingPresets, setIsFetchingPresets] = useState(false)
+  const [isFetchingComments, setIsFetchingComments] = useState(false)
+  const [isFetchingFavorites, setIsFetchingFavorites] = useState(false)
 
   useEffect(() => {
     fetchProfileData()
   }, [profileId])
+
+  useEffect(() => {
+    if (!editPresetOpen || !editingPreset) return
+
+    setEditName(editingPreset.name)
+    setEditDescription(editingPreset.description)
+    setEditLongDescription(editingPreset.long_description || '')
+    setEditCategory(editingPreset.category)
+    setEditTags(editingPreset.tags?.join(', ') || '')
+    setEditDependencies(editingPreset.dependencies?.join(', ') || '')
+    setEditAeVersion(editingPreset.ae_version || '')
+    setEditPresetFile(null)
+    setEditGifFile(null)
+  }, [editPresetOpen, editingPreset])
 
   const fetchProfileData = async () => {
     console.log('fetchProfileData called')
@@ -83,9 +149,43 @@ export default function Profile() {
         .select('*', { count: 'exact', head: true })
         .eq('user_id', profileData.id)
       setPresetCount(pc || 0)
+
+      const { count: fc } = await supabase
+        .from('favorites')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', profileData.id)
+      setFavoriteCount(fc || 0)
+
     }
 
+
     setIsLoading(false)
+  }
+
+  const fetchProfileFavorites = async () => {
+    setIsFetchingFavorites(true)
+    try {
+    const { data } = await supabase
+      .from('favorites')
+      .select(`
+        preset_id,
+        presets (*)
+      `)
+      .eq('user_id', profileUserId)
+      .order('created_at', { ascending: false })
+
+      if (data) {
+        const presets = data
+          .map(f => f.presets)
+          .filter(Boolean) as unknown as Preset[]
+        setProfileFavorites(presets)
+      }
+    }
+    catch (error){
+      console.log(error);
+    } finally {
+      setIsFetchingFavorites(false)
+    }
   }
 
   const handleSaveBio = async () => {
@@ -110,7 +210,7 @@ export default function Profile() {
       return
     }
 
-    const img = new Image()
+    const img = new window.Image()
     const url = URL.createObjectURL(file)
     img.src = url
 
@@ -150,32 +250,42 @@ export default function Profile() {
   }
 
   const fetchProfilePresets = async () => {
-    const { data, error } = await supabase
-      .from('presets')
-      .select('*')
-      .eq('user_id', profileUserId)
-      .eq('is_approved', true)
-      .order('created_at', { ascending: false })
+    setIsFetchingPresets(true)
+    try {
+      const { data, error } = await supabase
+        .from('presets')
+        .select('*')
+        .eq('user_id', profileUserId)
+        .eq('is_approved', true)
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('error fetching profile presets:', error)
-      return
+      if (error) {
+        console.error('error fetching profile presets:', error)
+        return
+      }
+      if (data) setProfilePresets(data)
+    } finally {
+      setIsFetchingPresets(false)
     }
-    if (data) setProfilePresets(data)
   }
 
   const fetchProfileComments = async () => {
-    const { data, error } = await supabase
-      .from('comments')
-      .select('*, presets(name)')
-      .eq('user_id', profileUserId)
-      .order('created_at', { ascending: false })
+    setIsFetchingComments(true)
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .select('*, presets(name)')
+        .eq('user_id', profileUserId)
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('error fetching profile comments:', error)
-      return
+      if (error) {
+        console.error('error fetching profile comments:', error)
+        return
+      }
+      if (data) setProfileComments(data)
+    } finally {
+      setIsFetchingComments(false)
     }
-    if (data) setProfileComments(data)
   }
 
   const handleEditComment = (commentId: string, currentText: string) => {
@@ -231,6 +341,150 @@ export default function Profile() {
     toast.success('comment deleted!')
   }
 
+  const handleEditPreset = (preset: Preset) => {
+    setEditingPreset(preset)
+    setEditPresetOpen(true)
+  }
+
+  const handleAskDeletePreset = (preset: Preset) => {
+    setEditingPreset(preset)
+    setDeletePresetOpen(true)
+  }
+
+  const handlePresetFileChange = (file: File) => {
+    const ext = file.name.split('.').pop()?.toLowerCase()
+    if (!['ffx', 'jsx', 'aep'].includes(ext || '')) {
+      toast.error('invalid file type! only .ffx, .jsx, and .aep files are allowed.')
+      return
+    }
+    setEditPresetFile(file)
+  }
+
+  const handleSavePreset = async () => {
+    if (!editingPreset || !user) return
+    setIsSavingPreset(true)
+
+    try {
+      let fileUrl = editingPreset.file_url
+      let fileName = editingPreset.file_name
+      let fileSize = editingPreset.file_size
+      let gifUrl = editingPreset.preview_gif_url
+
+      if (editPresetFile) {
+        const oldPath = editingPreset.file_url.split('/preset-files/')[1]
+        if (oldPath) {
+          await supabase.storage.from('preset-files').remove([oldPath])
+        }
+
+        const newPath = `${user.id}/${Date.now()}_${editPresetFile.name}`
+        const { error: uploadError } = await supabase.storage
+          .from('preset-files')
+          .upload(newPath, editPresetFile)
+        if (uploadError) throw uploadError
+
+        const { data: urlData } = supabase.storage.from('preset-files').getPublicUrl(newPath)
+        fileUrl = urlData.publicUrl
+        fileName = editPresetFile.name
+        fileSize = formatBytes(editPresetFile.size)
+      }
+
+      if (editGifFile) {
+        if (editGifFile.type !== 'image/gif') {
+          throw new Error('preview must be a GIF!')
+        }
+
+        const oldGifPath = editingPreset.preview_gif_url?.split('/preset-previews/')[1]
+        if (oldGifPath) {
+          await supabase.storage.from('preset-previews').remove([oldGifPath])
+        }
+
+        const newGifPath = `${user.id}/${Date.now()}_${editGifFile.name}`
+        const { error: gifUploadError } = await supabase.storage
+          .from('preset-previews')
+          .upload(newGifPath, editGifFile)
+        if (gifUploadError) throw gifUploadError
+
+        const { data: gifUrlData } = supabase.storage.from('preset-previews').getPublicUrl(newGifPath)
+        gifUrl = gifUrlData.publicUrl
+      }
+
+      const updates = {
+        name: editName,
+        description: editDescription,
+        long_description: editLongDescription,
+        category: editCategory,
+        ae_version: editAeVersion,
+        tags: editTags.split(',').map(t => t.trim()).filter(Boolean),
+        dependencies: editDependencies.split(',').map(d => d.trim()).filter(Boolean),
+        file_url: fileUrl,
+        file_name: fileName,
+        file_size: fileSize,
+        preview_gif_url: gifUrl,
+      }
+
+      const { error } = await supabase
+        .from('presets')
+        .update(updates)
+        .eq('id', editingPreset.id)
+
+      if (error) throw error
+
+      setProfilePresets(prev =>
+        prev.map(preset =>
+          preset.id === editingPreset.id
+            ? {
+                ...preset,
+                ...updates,
+                previewGif: gifUrl,
+                fileName,
+                aeVersion: editAeVersion,
+              }
+            : preset
+        )
+      )
+
+      toast.success('preset updated!')
+      setEditPresetOpen(false)
+    } catch (error: any) {
+      toast.error(error.message)
+    } finally {
+      setIsSavingPreset(false)
+    }
+  }
+
+  const handleDeletePreset = async () => {
+    if (!editingPreset || !user) return
+    setIsDeletingPreset(true)
+
+    try {
+      const filePath = editingPreset.file_url.split('/preset-files/')[1]
+      if (filePath) {
+        await supabase.storage.from('preset-files').remove([filePath])
+      }
+
+      const gifPath = editingPreset.preview_gif_url?.split('/preset-previews/')[1]
+      if (gifPath) {
+        await supabase.storage.from('preset-previews').remove([gifPath])
+      }
+
+      const { error } = await supabase
+        .from('presets')
+        .delete()
+        .eq('id', editingPreset.id)
+
+      if (error) throw error
+
+      setProfilePresets(prev => prev.filter(preset => preset.id !== editingPreset.id))
+      setPresetCount(prev => prev - 1)
+      setDeletePresetOpen(false)
+      toast.success('preset deleted!')
+    } catch (error: any) {
+      toast.error(error.message)
+    } finally {
+      setIsDeletingPreset(false)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="profile-wrapper" style={{ scrollbarGutter: 'stable' }}>
@@ -247,6 +501,7 @@ export default function Profile() {
           <Skeleton className="h-32 w-full rounded-xl" />
         </div>
         <div className="profile-stats">
+          <Skeleton className="h-32 w-full rounded-2xl" />
           <Skeleton className="h-32 w-full rounded-2xl" />
           <Skeleton className="h-32 w-full rounded-2xl" />
         </div>
@@ -374,6 +629,7 @@ export default function Profile() {
             }
             setShowPresets(!showPresets)
             setShowComments(false)
+            setShowFavorites(false)
           }}
         >
           <CardContent className="flex flex-col items-center justify-center p-6 gap-1">
@@ -391,6 +647,7 @@ export default function Profile() {
             }
             setShowComments(!showComments)
             setShowPresets(false)
+            setShowFavorites(false)
           }}
         >
           <CardContent className="flex flex-col items-center justify-center p-6 gap-1">
@@ -399,42 +656,116 @@ export default function Profile() {
             <span className="profile-stat-label text-xs uppercase tracking-wider text-muted-foreground font-medium">comments</span>
           </CardContent>
         </Card>
+
+        <Card 
+          className={`profile-stat-card clickable-stat border-border/50 bg-card/50 backdrop-blur-sm transition-all ${showFavorites ? 'ring-2 ring-primary border-primary/50' : ''}`}
+          onClick={() => {
+            if (!showFavorites) {
+              fetchProfileFavorites()
+            }
+            setShowFavorites(!showFavorites)
+            setShowPresets(false)
+            setShowComments(false)
+          }}
+        >
+          <CardContent className="flex flex-col items-center justify-center p-6 gap-1">
+            <Heart size={24} className={`profile-stat-icon transition-colors ${showFavorites ? 'text-primary' : 'text-primary/80'}`} />
+            <span className="profile-stat-value text-2xl font-bold">{favoriteCount}</span>
+            <span className="profile-stat-label text-xs uppercase tracking-wider text-muted-foreground font-medium">favorites</span>
+          </CardContent>
+        </Card>
       </div>
 
       {showPresets && (
         <div className="profile-presets-section">
           <h2 className="profile-section-title mb-4">presets</h2>
-          {profilePresets.length === 0 ? (
-            <p className="profile-bio-empty text-center py-8">no presets yet.</p>
-          ) : (
-            <div className="profile-presets-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {profilePresets.map(preset => (
-                <Card
-                  key={preset.id}
-                  className="preset-card cursor-pointer overflow-hidden transition-all hover:border-primary/50 hover:shadow-lg hover:-translate-y-1 bg-card/40"
-                  onClick={() => navigate(`/preset/${preset.id}`)}
-                >
-                  <div className="aspect-video relative bg-muted overflow-hidden">
-                    <img 
-                      src={preset.preview_gif_url} 
-                      alt={preset.name} 
-                      className="object-cover w-full h-full"
-                      loading="lazy" 
-                    />
-                    <div className="preset-download-badge">
-                      <Download size={12} />
-                      <span>{preset.download_count}</span>
+          {isFetchingPresets ? (
+            <div className="presets-grid profile-presets-grid">
+              {[1, 2, 3, 4, 5, 6].map(n => (
+                <div key={n} className="preset-card">
+                  <div className="preset-preview">
+                    <Skeleton className="w-full h-[160px] rounded-b-none" />
+                  </div>
+                  <div className="preset-info">
+                    <div className="preset-details space-y-2">
+                      <Skeleton className="h-4 w-20 rounded-full" />
+                      <Skeleton className="h-5 w-3/4" />
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                    <div className="preset-metadata mt-4">
+                      <Skeleton className="h-3 w-1/2" />
                     </div>
                   </div>
-                  <CardHeader className="p-4">
-                    <div className="flex flex-col gap-1">
-                      <CardTitle className="text-base font-semibold truncate">{preset.name}</CardTitle>
-                      <CardDescription className="line-clamp-2 text-xs">{preset.description}</CardDescription>
-                      <p className="preset-date mt-2">{formatDate(preset.created_at)}</p>
-                    </div>
-                  </CardHeader>
-                </Card>
+                </div>
               ))}
+            </div>
+          ) : profilePresets.length === 0 ? (
+            <p className="profile-bio-empty text-center py-8">no presets yet.</p>
+          ) : (
+            <div className="presets-grid profile-presets-grid">
+              {profilePresets.map(preset => {
+                const category = categories.find(c => c.id === preset.category)
+                const CategoryIcon = category ? IconMap[category.icon || 'LayoutGrid'] : LayoutGrid
+                
+                return (
+                  <div
+                    key={preset.id}
+                    className="preset-card"
+                    onClick={() => navigate(`/preset/${preset.id}`)}
+                  >
+                    <div className="preset-preview">
+                      <img 
+                        src={preset.preview_gif_url} 
+                        alt={preset.name} 
+                        loading="lazy" 
+                      />
+                      <div className="preset-download-badge">
+                        <Download size={12} />
+                        <span>{preset.download_count}</span>
+                      </div>
+                      {isOwnProfile && (
+                        <div className="comment-actions preset-card-actions" onClick={(e) => e.stopPropagation()}>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="comment-action-btn"
+                            onClick={() => handleEditPreset(preset)}
+                            title="Edit"
+                          >
+                            <Pencil size={14} />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="comment-action-btn comment-action-btn-danger"
+                            onClick={() => handleAskDeletePreset(preset)}
+                            title="Delete"
+                          >
+                            <Trash2 size={14} />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <div className="preset-info">
+                      <div className="preset-details">
+                        <div className="category-badge-pill">
+                          {CategoryIcon && <CategoryIcon size={10} />}
+                          <span>{category?.name}</span>
+                        </div>
+                        <h3 className="preset-name">{preset.name}</h3>
+                        <p className="preset-description">{preset.description}</p>
+                      </div>
+                      <div className="preset-metadata">
+                        <div className="flex items-center gap-2">
+                          <span className="preset-author">{username}</span>
+                          <span className="metadata-dot">•</span>
+                          <span className="preset-date">{formatDate(preset.created_at)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
@@ -443,7 +774,22 @@ export default function Profile() {
       {showComments && (
         <div className="profile-presets-section">
           <h2 className="profile-section-title mb-4">comments</h2>
-          {profileComments.length === 0 ? (
+          {isFetchingComments ? (
+            <div className="flex flex-col gap-3">
+              {[1, 2, 3].map(n => (
+                <Card key={n} className="bg-card/40 border-border/40">
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex flex-col gap-1">
+                      <Skeleton className="h-4 w-1/4" />
+                      <Skeleton className="h-3 w-1/6" />
+                    </div>
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : profileComments.length === 0 ? (
             <p className="profile-bio-empty text-center py-8">no comments yet.</p>
           ) : (
             <div className="flex flex-col gap-3">
@@ -535,6 +881,118 @@ export default function Profile() {
           )}
         </div>
       )}
+
+      {showFavorites && (
+        <div className="profile-presets-section">
+          <h2 className="profile-section-title mb-4">favorites</h2>
+          {isFetchingFavorites ? (
+            <div className="presets-grid profile-presets-grid">
+              {[1, 2, 3, 4, 5, 6].map(n => (
+                <div key={n} className="preset-card">
+                  <div className="preset-preview">
+                    <Skeleton className="w-full h-[160px] rounded-b-none" />
+                  </div>
+                  <div className="preset-info">
+                    <div className="preset-details space-y-2">
+                      <Skeleton className="h-4 w-20 rounded-full" />
+                      <Skeleton className="h-5 w-3/4" />
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                    <div className="preset-metadata mt-4">
+                      <Skeleton className="h-3 w-1/2" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : profileFavorites.length === 0 ? (
+            <p className="profile-bio-empty text-center py-8">no favorites yet.</p>
+          ) : (
+            <div className="presets-grid profile-presets-grid">
+              {profileFavorites.map(preset => {
+                const category = categories.find(c => c.id === preset.category)
+                const CategoryIcon = category ? IconMap[category.icon || 'LayoutGrid'] : LayoutGrid
+                
+                return (
+                  <div
+                    key={preset.id}
+                    className="preset-card"
+                    onClick={() => navigate(`/preset/${preset.id}`)}
+                  >
+                    <div className="preset-preview">
+                      <img 
+                        src={preset.preview_gif_url} 
+                        alt={preset.name} 
+                        loading="lazy" 
+                      />
+                      <div className="preset-download-badge">
+                        <Download size={12} />
+                        <span>{preset.download_count}</span>
+                      </div>
+                    </div>
+                    <div className="preset-info">
+                      <div className="preset-details">
+                        <div className="category-badge-pill">
+                          {CategoryIcon && <CategoryIcon size={10} />}
+                          <span>{category?.name}</span>
+                        </div>
+                        <h3 className="preset-name">{preset.name}</h3>
+                        <p className="preset-description">{preset.description}</p>
+                      </div>
+                      <div className="preset-metadata">
+                        <div className="flex items-center gap-2">
+                          <span className="preset-author">{preset.author_name || 'Unknown'}</span>
+                          <span className="metadata-dot">•</span>
+                          <span className="preset-date">{formatDate(preset.created_at)}</span>
+                        </div>
+                        <Heart size={12} className="favorite-indicator-icon" fill="currentColor" />
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      <PresetDeleteDialog
+        open={deletePresetOpen}
+        onOpenChange={setDeletePresetOpen}
+        preset={editingPreset}
+        onDelete={handleDeletePreset}
+        isDeleting={isDeletingPreset}
+      />
+
+      <PresetEditDialog
+        open={editPresetOpen}
+        onOpenChange={setEditPresetOpen}
+        preset={editingPreset}
+        editName={editName}
+        setEditName={setEditName}
+        editDescription={editDescription}
+        setEditDescription={setEditDescription}
+        editLongDescription={editLongDescription}
+        setEditLongDescription={setEditLongDescription}
+        editCategory={editCategory}
+        setEditCategory={setEditCategory}
+        editTags={editTags}
+        setEditTags={setEditTags}
+        editDependencies={editDependencies}
+        setEditDependencies={setEditDependencies}
+        editAeVersion={editAeVersion}
+        setEditAeVersion={setEditAeVersion}
+        editPresetFile={editPresetFile}
+        onPresetFileChange={handlePresetFileChange}
+        editGifFile={editGifFile}
+        onGifFileChange={setEditGifFile}
+        dragOver={dragOver}
+        setDragOver={setDragOver}
+        gifDragOver={gifDragOver}
+        setGifDragOver={setGifDragOver}
+        onSave={handleSavePreset}
+        isSaving={isSavingPreset}
+      />
     </div>
   )
 }

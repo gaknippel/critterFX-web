@@ -1,3 +1,243 @@
+.settings-wrapper {
+  padding: 2rem;
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+  animation: fadeIn 0.5s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-header-section,
+.settings-info-section,
+.settings-footer {
+  background: color-mix(in oklch, var(--card), transparent 50%);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 50%);
+  border-radius: 1rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.settings-header-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.settings-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-welcome-message {
+  margin: 0;
+  font-family: "Instrument Sans", sans-serif;
+  font-weight: 700;
+  font-size: 1.75rem;
+  color: var(--foreground);
+  line-height: 1.2;
+}
+
+.settings-header-description {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+}
+
+.settings-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-section-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settings-field-label {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Consistent styling for all form inputs - matching Upload.tsx & Profile.tsx */
+.settings-field [data-slot="input"],
+.settings-field [data-slot="select-trigger"],
+.settings-field [data-slot="textarea"],
+.settings-field textarea {
+  background: color-mix(in oklch, var(--card), transparent 40%) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  border-radius: 0.625rem !important;
+  min-height: 2.75rem !important;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
+  width: 100% !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: var(--foreground) !important;
+  font-size: 0.9rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.settings-field [data-slot="textarea"],
+.settings-field textarea {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  resize: vertical;
+}
+
+.settings-field [data-slot="input"]:hover,
+.settings-field [data-slot="select-trigger"]:hover,
+.settings-field [data-slot="textarea"]:hover,
+.settings-field textarea:hover {
+  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+}
+
+.settings-field [data-slot="input"]:focus-visible,
+.settings-field [data-slot="select-trigger"][data-state="open"],
+.settings-field [data-slot="textarea"]:focus-visible,
+.settings-field textarea:focus-visible {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  background: color-mix(in oklch, var(--card), transparent 10%) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%) !important;
+}
+
+.settings-alert {
+  background: color-mix(in oklch, var(--muted), transparent 70%) !important;
+  border: 1px dashed color-mix(in oklch, var(--border), transparent 20%) !important;
+}
+
+.settings-alert-error {
+  background: color-mix(in oklch, var(--destructive), transparent 95%) !important;
+  border: 1px solid color-mix(in oklch, var(--destructive), transparent 80%) !important;
+}
+
+.settings-action-button {
+  min-width: 110px; /* Prevent shrinking during scan text change */
+}
+
+.settings-action-button,
+.settings-wrapper [data-variant="outline"] {
+  height: 2.25rem;
+  border-radius: 0.625rem !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  border-color: color-mix(in oklch, var(--primary), transparent 40%) !important;
+  color: var(--primary) !important;
+  transition: all 0.2s ease !important;
+}
+
+.settings-section-content {
+  min-height: 80px; /* Keep space for alerts to prevent card collapse */
+}
+
+.settings-detection-area {
+  height: 220px; /* Fixed height to prevent layout jumps */
+  width: 100%;
+}
+
+.settings-action-button:hover,
+.settings-wrapper [data-variant="outline"]:hover {
+  background: color-mix(in oklch, var(--primary), transparent 92%) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.settings-field [data-variant="outline"] {
+  height: 2.5rem !important; /* Folder browse buttons are a bit taller */
+  width: 2.5rem !important;
+}
+
+.settings-footer {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.settings-save-button {
+  height: 3rem !important;
+  width: 100%;
+  max-width: 300px;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  background: var(--primary) !important;
+  border: 1px solid color-mix(in oklch, var(--primary), transparent 50%) !important;
+  color: var(--primary-foreground) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+  border-radius: 0.75rem !important;
+}
+
+.settings-save-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--primary) !important;
+  opacity: 0.9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.settings-save-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.settings-save-message {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.settings-save-message.success {
+  color: #10b981;
+}
+
+.settings-save-message.error {
+  color: var(--destructive);
+}
+
+@media (max-width: 768px) {
+  .settings-wrapper {
+    padding: 1rem;
+    padding-top: 3.5rem;
+  }
+  
+  .settings-header-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .settings-save-button {
+    height: 2.75rem !important;
+  }
+}
+
 .upload-auth-gate {
   display: flex;
   flex-direction: column;
@@ -19,31 +259,6 @@
 .sign-in-button:hover {
   background: color-mix(in oklch, var(--primary), transparent 90%) !important;
   border-color: var(--primary) !important;
-}
-
-.upload-wrapper {
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-  animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.upload-card {
-  background: color-mix(in oklch, var(--card), transparent 30%);
-  backdrop-filter: blur(8px);
-  border-color: color-mix(in oklch, var(--border), transparent 20%);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-}
-
-.upload-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
 }
 
 .upload-dropzone {
@@ -81,90 +296,6 @@
   opacity: 0.7;
 }
 
-.upload-file-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.upload-file-name {
-  font-weight: 600;
-  color: var(--foreground);
-  margin: 0;
-}
-
-.upload-file-size {
-  font-size: 0.85rem;
-  color: var(--muted-foreground);
-  margin: 0;
-}
-
-.upload-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* Consistent styling for all form inputs */
-.upload-field [data-slot="input"],
-.upload-field [data-slot="select-trigger"],
-.upload-field textarea {
-  background: color-mix(in oklch, var(--card), transparent 40%) !important;
-  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
-  border-radius: 0.625rem !important;
-  height: 2.75rem !important;
-  padding: 0 0.875rem !important;
-  width: 100% !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  color: var(--foreground) !important;
-  font-size: 0.9rem !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-.upload-field textarea {
-  height: auto !important;
-  min-height: 120px !important;
-  padding: 0.75rem !important;
-}
-
-.upload-field [data-slot="input"]:hover,
-.upload-field [data-slot="select-trigger"]:hover {
-  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
-  background: color-mix(in oklch, var(--card), transparent 20%) !important;
-}
-
-.upload-field [data-slot="input"]:focus-visible,
-.upload-field [data-slot="select-trigger"][data-state="open"] {
-  outline: none !important;
-  border-color: var(--primary) !important;
-  background: color-mix(in oklch, var(--card), transparent 10%) !important;
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%) !important;
-}
-
-[data-slot="select-content"] {
-  background: color-mix(in oklch, var(--popover), transparent 5%) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2) !important;
-  padding: 0.25rem !important;
-}
-
-[data-slot="select-item"] {
-  color: var(--foreground) !important;
-  cursor: pointer !important;
-  border-radius: 0.5rem !important;
-  margin: 0.125rem 0 !important;
-  padding: 0.5rem 0.75rem !important;
-  transition: all 0.15s ease !important;
-}
-
-[data-slot="select-item"]:hover,
-[data-slot="select-item"]:focus {
-  background: color-mix(in oklch, var(--accent), transparent 30%) !important;
-  color: var(--foreground) !important;
-}
-
 .upload-hint {
   font-size: 0.8rem;
   color: var(--muted-foreground);
@@ -175,65 +306,4 @@
   font-size: 0.8rem;
   color: var(--primary);
   margin: 0.25rem 0 0 0;
-}
-
-.upload-submit-btn {
-  height: 3rem !important;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  background: hsl(var(--card)) !important;
-  border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
-  color: white !important;
-  box-shadow: none !important;
-  transition: all 0.3s ease !important;
-  border-radius: 0.75rem !important;
-}
-
-.upload-submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  background: color-mix(in oklch, var(--card), white 15%) !important;
-  box-shadow: none !important;
-}
-
-.upload-submit-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.upload-submit-btn:disabled {
-  background: var(--muted) !important;
-  box-shadow: none !important;
-  opacity: 0.5 !important;
-}
-
-[data-slot="select-content"][data-state="open"] {
-  animation: selectIn 0.15s ease;
-}
-
-[data-slot="select-content"][data-state="closed"] {
-  animation: selectOut 0.15s ease;
-}
-
-@keyframes selectIn {
-  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes selectOut {
-  from { opacity: 1; transform: translateY(0) scale(1); }
-  to { opacity: 0; transform: translateY(-4px) scale(0.97); }
-}
-
-@media (max-width: 768px) {
-  .upload-wrapper {
-    padding: 1rem;
-  }
-  .upload-dropzone {
-    padding: 2rem 1rem;
-  }
-  .upload-form {
-    gap: 1rem;
-  }
-  .upload-submit-btn {
-    height: 2.75rem !important;
-  }
 }

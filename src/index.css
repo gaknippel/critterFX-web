@@ -198,6 +198,7 @@ button:focus-visible {
   }
   html {
     @apply font-sans;
+    font-size: 110%;
   }
 }
 

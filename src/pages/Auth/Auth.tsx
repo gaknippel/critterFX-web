@@ -47,6 +47,13 @@ export default function Auth() {
     setIsLoading(true)
 
     try {
+      if (username.length < 3 || username.length > 20) {
+        throw new Error('usernames must be between 3 and 20 characters.')
+      }
+
+      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        throw new Error('usernames can only contain letters, numbers, and underscores.')
+      }
 
       const { data: existingUser } = await supabase //check for duplicate username
       .from('profiles')

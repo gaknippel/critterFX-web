@@ -1,0 +1,171 @@
+.preset-manage-card {
+  position: relative;
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in oklch, var(--border), transparent 50%) !important;
+}
+
+.preset-manage-close {
+  position: absolute !important;
+  top: 1rem;
+  right: 1rem;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: 999px !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 40%) !important;
+  background: color-mix(in oklch, var(--card), transparent 28%) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease !important;
+}
+
+.preset-manage-close:hover {
+  background: color-mix(in oklch, var(--accent), transparent 35%) !important;
+  border-color: color-mix(in oklch, var(--primary), transparent 35%) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.preset-manage-close:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 82%) !important;
+}
+
+.preset-manage-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.preset-manage-dropzone {
+  border: 2px dashed color-mix(in oklch, var(--border), transparent 20%);
+  border-radius: 0.75rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, var(--muted), transparent 70%);
+}
+
+.preset-manage-dropzone:hover,
+.preset-manage-dropzone.dragover {
+  border-color: var(--primary);
+  background: color-mix(in oklch, var(--accent), transparent 50%);
+  color: var(--foreground);
+}
+
+.preset-manage-dropzone.has-file {
+  border-color: var(--primary);
+  border-style: solid;
+  background: color-mix(in oklch, var(--primary), transparent 95%);
+}
+
+.preset-manage-dropzone-prompt p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.preset-manage-dropzone-sub {
+  font-size: 0.85rem !important;
+  margin-top: 0.5rem !important;
+  opacity: 0.7;
+}
+
+.preset-manage-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.preset-manage-file-name {
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.preset-manage-file-size {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+.preset-manage-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.preset-manage-field input[data-slot="input"],
+.preset-manage-field [data-slot="select-trigger"],
+.preset-manage-field textarea {
+  background: color-mix(in oklch, var(--card), transparent 40%) !important;
+  border: 1px solid color-mix(in oklch, var(--border), transparent 20%) !important;
+  border-radius: 0.625rem !important;
+  height: 2.75rem !important;
+  padding: 0 0.875rem !important;
+  width: 100% !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: var(--foreground) !important;
+  font-size: 0.9rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.preset-manage-field textarea {
+  height: auto !important;
+  min-height: 120px !important;
+  padding: 0.75rem !important;
+}
+
+.preset-manage-field input:hover,
+.preset-manage-field [data-slot="select-trigger"]:hover {
+  border-color: color-mix(in oklch, var(--primary), transparent 30%) !important;
+  background: color-mix(in oklch, var(--card), transparent 20%) !important;
+}
+
+.preset-manage-field input:focus-visible,
+.preset-manage-field [data-slot="select-trigger"][data-state="open"] {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  background: color-mix(in oklch, var(--card), transparent 10%) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary), transparent 85%) !important;
+}
+
+.preset-manage-hint {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  font-weight: 400;
+}
+
+.preset-manage-submit {
+  height: 3rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  background: var(--primary) !important;
+  border: 1px solid color-mix(in oklch, var(--primary), transparent 50%) !important;
+  color: var(--primary-foreground) !important;
+  box-shadow: none !important;
+  transition: all 0.3s ease !important;
+  border-radius: 0.75rem !important;
+}
+
+.preset-manage-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: color-mix(in oklch, var(--primary), transparent 10%) !important;
+  box-shadow: none !important;
+  filter: brightness(1.1);
+}
+
+.preset-manage-submit:disabled {
+  background: var(--muted) !important;
+  box-shadow: none !important;
+  opacity: 0.5 !important;
+}
+
+.preset-manage-footer {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 1rem !important;
+}
