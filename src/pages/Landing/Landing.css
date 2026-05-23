@@ -390,29 +390,40 @@
 }
 
 @media (max-width: 900px) {
+  .landing-page {
+    padding: clamp(0.9rem, 3vw, 1.25rem);
+  }
+
   .landing-hero {
     --landing-panel-offset: 0px;
 
     grid-template-columns: 1fr;
+    gap: clamp(1.25rem, 4vw, 2rem);
     min-height: auto;
+    padding: clamp(1rem, 4vw, 2rem) 0 clamp(1.5rem, 5vw, 2.5rem);
   }
 
   .landing-hero-panel {
+    width: 100%;
+    max-width: 100%;
     transform: none;
   }
 
   .landing-hero h1 {
-    max-width: 12ch;
+    max-width: 13ch;
   }
 
   .landing-strip,
   .landing-feature-grid {
     grid-template-columns: 1fr;
+    gap: 0.85rem;
   }
 
   .landing-install-band {
     align-items: flex-start;
     flex-direction: column;
+    gap: 1rem;
+    padding: 0;
   }
 
   .landing-install-actions {
@@ -438,11 +449,36 @@
 
 @media (max-width: 540px) {
   .landing-page {
-    padding: 0.85rem;
+    padding: 0.8rem;
+  }
+
+  .landing-hero {
+    gap: 1rem;
+    padding: 0.75rem 0 1.75rem;
+  }
+
+  .landing-hero-copy {
+    gap: 1rem;
   }
 
   .landing-hero h1 {
-    font-size: 3rem;
+    max-width: 100%;
+    font-size: clamp(2.55rem, 13vw, 3rem);
+    line-height: 0.96;
+  }
+
+  .landing-hero p,
+  .landing-ready-block p,
+  .landing-install-band p {
+    font-size: 0.98rem;
+    line-height: 1.55;
+  }
+
+  .landing-actions,
+  .landing-ready-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.7rem;
   }
 
   .landing-actions,
@@ -452,7 +488,63 @@
     width: 100%;
   }
 
+  .landing-download-cta {
+    align-items: stretch;
+    gap: 0.3rem;
+  }
+
+  .landing-download-cta span {
+    text-align: center;
+  }
+
+  .landing-primary-link,
+  .landing-secondary-link {
+    min-height: 2.85rem;
+    padding: 0 0.9rem;
+  }
+
+  .landing-hero-panel {
+    border-radius: 1rem;
+  }
+
+  .landing-window-bar {
+    height: 2.15rem;
+    padding: 0 0.8rem;
+  }
+
   .landing-preview-stage {
-    min-height: 240px;
+    min-height: unset;
+    aspect-ratio: 16 / 11;
+  }
+
+  .landing-feature-grid {
+    margin-bottom: 1.75rem;
+  }
+
+  .landing-feature {
+    border-radius: 0.85rem;
+  }
+
+  .landing-feature-media {
+    aspect-ratio: 16 / 10;
+  }
+
+  .landing-feature-copy {
+    padding: 0.95rem;
+  }
+
+  .landing-install-band > div {
+    gap: 0.35rem 0.65rem;
+  }
+
+  .landing-ready-block {
+    gap: 0.8rem;
+    margin-top: 1.75rem;
+    padding: 0.75rem 0 1.25rem;
+  }
+
+  .landing-ready-block h2 {
+    font-size: clamp(2rem, 11vw, 2.65rem);
+    line-height: 1;
   }
 }

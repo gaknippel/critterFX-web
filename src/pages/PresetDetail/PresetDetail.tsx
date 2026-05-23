@@ -41,7 +41,7 @@ import { useState, useEffect } from 'react'
 import './PresetDetail.css'
 import '@/components/presets/PresetManagementDialogs.css'
 import { fetchPresets, categories, type Preset } from '@/lib/api'
-import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogDescription, DialogClose, DialogHeader } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogDescription, DialogClose } from "@/components/ui/dialog"
 import SplitText from '@/components/SplitText'
 import { Skeleton } from '@/components/ui/skeleton'
 import { supabase, Comment } from '@/lib/supabase'
@@ -534,22 +534,69 @@ const handleDeleteComment = async (commentId: string) => {
                 install to AE
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>get critterFX desktop!</DialogTitle>
-                <DialogDescription>
-                  install presets directly into after effects with one click. :D
-                </DialogDescription>
-              </DialogHeader>
-              <div className="bg-muted p-4 rounded-lg flex items-center justify-between gap-4">
-                <p className="text-sm text-muted-foreground">
-                  download the critterFX desktop app to install presets.
-                </p>
-                <Button asChild size="sm">
-                  <a href="https://github.com/gaknippel/critterFX/releases" target="_blank" rel="noopener noreferrer">
-                    download app
-                  </a>
-                </Button>
+            <DialogContent
+              showCloseButton={false}
+              className="preset-manage-dialog preset-install-dialog"
+            >
+              <div className="settings-wrapper preset-manage-shell">
+                <DialogClose asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="preset-manage-close-button"
+                    aria-label="Close install dialog"
+                  >
+                    <X size={16} />
+                  </Button>
+                </DialogClose>
+
+                <div className="settings-header-section preset-manage-header-section">
+                  <div className="settings-header-content">
+                    <DialogTitle asChild>
+                      <h1 className="settings-welcome-message preset-manage-title">
+                        <SplitText
+                          text="get critterFX desktop"
+                          delay={20}
+                          duration={1.5}
+                          ease="elastic.out(1, 0.3)"
+                          splitType="chars"
+                          from={{ opacity: 0, y: 5 }}
+                          to={{ opacity: 1, y: 0 }}
+                          threshold={0.1}
+                          rootMargin="-100px"
+                          textAlign="left"
+                        />
+                      </h1>
+                    </DialogTitle>
+                    <DialogDescription className="settings-header-description preset-manage-description">
+                      install presets directly into after effects with one click.
+                    </DialogDescription>
+                  </div>
+                </div>
+
+                <div className="settings-info-section">
+                  <div className="settings-section-header">
+                    <h2 className="settings-section-title">desktop app required</h2>
+                  </div>
+                  <div className="settings-section-content preset-manage-section-content">
+                    <a
+                      className="preset-install-file-box"
+                      href="https://github.com/gaknippel/critterFX/releases"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Download className="preset-install-main-icon" />
+                      <div>
+                        <p className="preset-manage-file-name">critterFX desktop</p>
+                        <p className="preset-manage-file-size">windows 10+ and 64 bit</p>
+                      </div>
+                    </a>
+                    <p className="preset-install-copy">
+                      download the desktop app to use <strong>{preset.name}</strong> right away.
+                    </p>
+                  </div>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
