@@ -89,7 +89,7 @@ export default function Landing() {
     <div className="landing-page">
       <section className="landing-hero">
         <div className="landing-hero-copy">
-          <h1>every preset, script, and composition you want.</h1>
+          <h1>every preset, script, and composition you need.</h1>
           <p>
             tired of terribly overpriced editing resources?
             critterFX is a free and open source platform to
