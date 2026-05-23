@@ -98,7 +98,7 @@ export default function Landing() {
           </p>
           <div className="landing-actions">
             <DownloadCta />
-            <Link className="landing-secondary-link" to="/">
+            <Link className="landing-secondary-link" to="/browse">
               browse presets
               <ArrowRight size={18} />
             </Link>
@@ -161,7 +161,7 @@ export default function Landing() {
         <p>install the desktop app for Windows!</p>
         <div className="landing-ready-actions">
           <DownloadCta />
-          <Link className="landing-secondary-link" to="/">
+          <Link className="landing-secondary-link" to="/browse">
             browse presets
             <ArrowRight size={18} />
           </Link>
