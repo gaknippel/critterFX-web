@@ -10,7 +10,12 @@ import { useUserContext } from './context/UserContext'
 function AppContent() {
   const { isLoading } = useUserContext() //checks if the user is signed in, for loading flag
 
-  if (isLoading) {
+
+  //dont block the confirm page with loading screen, 
+  // since the user is not signed in yet and we need to verify their email first. 
+  const isConfrimPage = window.location.pathname === '/confirm' 
+
+  if (isLoading && !isConfrimPage) {
     return (
       <>
         <div className="app-loading">

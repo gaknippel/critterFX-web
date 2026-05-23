@@ -18,7 +18,7 @@ const sourceUrl = 'https://github.com/gaknippel/critterFX'
 const featureDemos = [
   {
     title: 'browse presets',
-    copy: 'find text animations, transitions, effects, scripts, and much more with tags, version notes, and dependencies.',
+    copy: 'find text animations, transitions, effects, scripts, and much more with dependencies, compatility info, and use instructions.',
     gif: '/landing-browse.webm',
     icon: Search,
   },
@@ -114,7 +114,7 @@ export default function Landing() {
           <DemoMedia
             src="/landing-hero.webm"
             alt="critterFX app preview"
-            label="drop landing-hero.webm in public"
+            label="landing-hero.webm"
             icon={Sparkles}
             className="landing-preview-stage"
           />

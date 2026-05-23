@@ -8,9 +8,15 @@ export default function Confirm() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (status ==='loading') setStatus('error')
+      }, 10000)
+
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         setStatus('success')
+        clearTimeout(timeout) //cancel the timeout if worked
       }
     })
 
