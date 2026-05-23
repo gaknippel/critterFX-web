@@ -18,23 +18,35 @@ const sourceUrl = 'https://github.com/gaknippel/critterFX'
 const featureDemos = [
   {
     title: 'browse presets',
-    copy: 'find text animations, transitions, effects, scripts, and compositions with tags, version notes, and dependencies.',
-    gif: '/landing-browse.gif',
+    copy: 'find text animations, transitions, effects, scripts, and much more with tags, version notes, and dependencies.',
+    gif: '/landing-browse.webm',
     icon: Search,
   },
   {
     title: 'install in one click',
     copy: 'send presets straight into your After Effects folders with the desktop app.',
-    gif: '/landing-install.gif',
+    gif: '/landing-install.webm',
     icon: FolderDown,
   },
   {
     title: 'share your work',
     copy: 'upload presets with your own style, if you just hate everything else.',
-    gif: '/landing-upload.gif',
+    gif: '/landing-upload.webm',
     icon: UploadCloud,
   },
 ]
+
+function DownloadCta() {
+  return (
+    <div className="landing-download-cta">
+      <a className="landing-primary-link" href={releaseUrl} target="_blank" rel="noreferrer">
+        <Download size={18} />
+        install desktop app
+      </a>
+      <span>windows 10+ and 64 bit</span>
+    </div>
+  )
+}
 
 type DemoMediaProps = {
   src: string
@@ -45,12 +57,24 @@ type DemoMediaProps = {
 }
 
 function DemoMedia({ src, alt, label, icon: Icon, className }: DemoMediaProps) {
-  const [hasImage, setHasImage] = useState(true)
+  const [hasMedia, setHasMedia] = useState(true)
+  const isVideo = src.endsWith('.webm')
 
   return (
     <div className={className}>
-      {hasImage && <img src={src} alt={alt} onError={() => setHasImage(false)} />}
-      {!hasImage && (
+      {hasMedia && isVideo && (
+        <video
+          src={src}
+          aria-label={alt}
+          autoPlay
+          loop
+          muted
+          playsInline
+          onError={() => setHasMedia(false)}
+        />
+      )}
+      {hasMedia && !isVideo && <img src={src} alt={alt} onError={() => setHasMedia(false)} />}
+      {!hasMedia && (
         <div className="landing-media-fallback">
           <Icon size={28} />
           {label && <span>{label}</span>}
@@ -73,10 +97,7 @@ export default function Landing() {
             Effects with a stupid easy process.
           </p>
           <div className="landing-actions">
-            <a className="landing-primary-link" href={releaseUrl} target="_blank" rel="noreferrer">
-              <Download size={18} />
-              install desktop app
-            </a>
+            <DownloadCta />
             <Link className="landing-secondary-link" to="/">
               browse presets
               <ArrowRight size={18} />
@@ -91,9 +112,9 @@ export default function Landing() {
             <span />
           </div>
           <DemoMedia
-            src="/landing-hero.gif"
+            src="/landing-hero.webm"
             alt="critterFX app preview"
-            label="drop landing-hero.gif in public"
+            label="drop landing-hero.webm in public"
             icon={Sparkles}
             className="landing-preview-stage"
           />
@@ -139,10 +160,7 @@ export default function Landing() {
         <h2>ready to try it?</h2>
         <p>install the desktop app for Windows!</p>
         <div className="landing-ready-actions">
-          <a className="landing-primary-link" href={releaseUrl} target="_blank" rel="noreferrer">
-            <Download size={18} />
-            install desktop app
-          </a>
+          <DownloadCta />
           <Link className="landing-secondary-link" to="/">
             browse presets
             <ArrowRight size={18} />
