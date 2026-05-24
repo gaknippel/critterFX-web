@@ -1,6 +1,53 @@
-# React + TypeScript + Vite
+# welcome to the web version of critterFX!
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+this behaves basically the same as the desktop app, except you can't write files to AE.
+
+## getting started locally
+
+follow these steps to set up and run the project on your local machine.
+
+### prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+
+### installation
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/gaknippel/critterfx-web.git
+    cd critterfx-web
+    ```
+2.  install dependencies:
+    ```bash
+    npm install
+    ```
+
+### environment setup
+
+create a `.env` file in the root directory and add your supabase credentials:
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### running the development server
+
+start the development server with:
+
+```bash
+npm run dev
+```
+
+the application will be available at `http://localhost:5173`.
+
+### other Scripts
+
+- `npm run build`: Build the project for production.
+- `npm run lint`: Run ESLint to check for code quality issues.
+- `npm run preview`: Preview the production build locally.
+
+## Official Plugins
 
 Currently, two official plugins are available:
 
