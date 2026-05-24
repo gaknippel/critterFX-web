@@ -143,7 +143,7 @@ export default function Landing() {
       <section className="landing-install-band">
         <div>
           <Layers size={22} />
-          <h2>built for developers</h2>
+          <h2>developer friendly!</h2>
           <p>
             check the github repo for the source code, API docs, and contribution guidelines. the desktop app is built with tauri and typescript, and the web platform is built with react.
           </p>
