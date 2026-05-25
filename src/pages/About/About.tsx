@@ -69,13 +69,13 @@ export default function About() {
             </div>
             <div className="about-content mt-2 space-y-4 text-sm text-muted-foreground">
               <p>
-                1. <strong>configure settings:</strong> go to the settings menu to make sure you have the right AE file paths set up.
+                1. <strong>configure settings:</strong> critterFX automatically scans your AE filepath, but if you want to change these filepaths, your are welcome to do so..
               </p>
               <p>
                 2. <strong>browse presets:</strong> head over to the preset page to find presets shared by the community.
               </p>
               <p>
-                3. <strong>download & apply:</strong> click download on any preset. they will be saved to your configured AE preset folder automatically!
+                3. <strong>download & apply:</strong> click download on any preset. they will be saved to your scanned AE preset folder automatically!
               </p>
               <p>
                 4. <strong>share your own:</strong> go to the upload tab to share your creations with the community.
@@ -86,12 +86,13 @@ export default function About() {
           <div className="about-info-section">
             <div className="about-section-header">
               <h2 className="about-section-title flex items-center gap-2">
-                <Heart size={18} /> my goal for you guys:
+                <Heart size={18} /> thank you for looking at this app!
               </h2>
             </div>
             <div className="about-content mt-4">
               <p className="about-description">
-                free presets for everyone to use & share!! 
+                tired of terribly overpriced editing resources? 
+                critterFX is a free and open source platform to browse and upload your own presets, seamlessly installing them to After Effects with a stupid easy process.
               </p>
             </div>
           </div>
@@ -100,7 +101,7 @@ export default function About() {
             <div className="about-feature-card">
               <Cpu size={24} className="mb-2 text-primary/80" />
               <h3>its fast</h3>
-              <p>native performance with rust</p>
+              <p>nothing bloating this app</p>
             </div>
             <div className="about-feature-card">
               <Globe size={24} className="mb-2 text-primary/80" />
@@ -316,7 +317,7 @@ struct PathConfig {
                   </ul>
 
                   <h4 className="font-semibold mt-6 mb-2 text-foreground">privilege escalation (windows)</h4>
-                  <p>installing `.jsx` scripts often requires writing to the `C:\Program Files` directory, which requires administrator privileges on windows. the backend handles this gracefully:</p>
+                  <p>installing `.jsx` scripts often requires writing to the `C:\Program Files` directory, which requires administrator privileges on windows. the backend handles this nicely:</p>
                   <ol className="list-decimal pl-6 space-y-1 mt-2">
                     <li>`install_preset` first attempts a standard file copy.</li>
                     <li>if it fails due to permission errors, it falls back to a custom `request_admin_and_copy` function:</li>
@@ -351,7 +352,8 @@ fn request_admin_and_copy(source: &str, dest: &str) -> Result<(), String> {
     }
 }`}</code>
                   </pre>
-                  <p className="mt-2">this function spawns a hidden powershell process using `-Verb RunAs` to prompt the user for UAC elevation and performs the copy with admin rights.</p>
+                  <p className="mt-2">this function spawns a hidden powershell process using `-Verb RunAs` to prompt the user for UAC elevation and performs the copy with admin rights.
+                  </p>
                 </div>
               </div>
             </div>

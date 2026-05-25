@@ -43,7 +43,7 @@ function DownloadCta() {
         <Download size={18} />
         install desktop app
       </a>
-      <span>windows 10+ and 64 bit</span>
+      <span>windows 10+ (64 bit)</span>
     </div>
   )
 }
@@ -158,7 +158,7 @@ export default function Landing() {
 
       <section className="landing-ready-block">
         <h2>ready to try it?</h2>
-        <p>install the desktop app for Windows!</p>
+        <p>install the desktop app for windows!</p>
         <div className="landing-ready-actions">
           <DownloadCta />
           <Link className="landing-secondary-link" to="/browse">
