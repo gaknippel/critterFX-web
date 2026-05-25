@@ -14,7 +14,8 @@ import {
   Pencil,
   FileCode,
   FileText,
-  Upload as UploadIcon
+  Upload as UploadIcon,
+  AlertTriangle
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -32,6 +33,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useState, useEffect } from 'react';
 
 import '../../pages/Upload/Upload.css'
@@ -213,7 +220,7 @@ export function PresetEditDialog({
 
   const [gifPreviewUrl, setGifPreviewUrl] = useState<string | null>(null)
 
-  // Initialize preview URL if a gif file is already passed in
+  // initialize preview URL if a gif file is already passed in
   useEffect(() => {
     if (editGifFile) {
       const url = URL.createObjectURL(editGifFile)
@@ -238,13 +245,13 @@ export function PresetEditDialog({
   }
 
   const handleGifSelection = (file: File) => {
-    if (file.type !== 'image/gif') {
-      toast.error('preview must be a GIF!')
+    if (file.type !== 'image/gif' && file.type !== 'video/webm') {
+      toast.error('preview must be a GIF or WebM!')
       return
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('gif preview too large! max size is 2MB.')
+      toast.error('preview too large! max size is 2MB.')
       return
     }
 
@@ -260,7 +267,7 @@ export function PresetEditDialog({
 
   const handleRemoveGif = (e: React.MouseEvent) => {
     e.stopPropagation()
-    onGifFileChange(null as any) // Parent handles null
+    onGifFileChange(null as any) // parent handles null
   }
 
   const handleRemovePreset = (e: React.MouseEvent) => {
@@ -313,7 +320,7 @@ export function PresetEditDialog({
 
           <div className="preset-edit-layout">
             
-            {/* Files Section */}
+            {/* files section */}
             <div className="settings-info-section">
               <div className="settings-section-header">
                 <h2 className="settings-section-title">files</h2>
@@ -395,10 +402,24 @@ export function PresetEditDialog({
 
                 {/* gif dropzone */}
                 <div className="settings-field">
-                  <Label className="settings-field-label">
-                    preview gif
-                    <span className="upload-hint preset-label-hint">(leave empty to keep current)</span>
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Label className="settings-field-label">
+                      preview gif / webm
+                      <span className="upload-hint preset-label-hint">(leave empty to keep current)</span>
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button type="button" className="text-orange-500 hover:text-orange-400 transition-colors">
+                            <AlertTriangle className="size-4" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[200px] text-center">
+                          <p>webms are highly recommended over gifs!</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <div
                     className={`upload-dropzone preset-file-dropzone ${gifDragOver ? 'dragover' : ''} ${gifPreviewUrl ? 'has-file preset-file-dropzone--preview' : 'preset-file-dropzone--empty'}`}
                     onDrop={handleGifDrop}
@@ -409,7 +430,7 @@ export function PresetEditDialog({
                     <input
                       id={gifInputId}
                       type="file"
-                      accept="image/gif"
+                      accept="image/gif,video/webm"
                       className="preset-hidden-input"
                       onChange={(e) => e.target.files?.[0] && handleGifSelection(e.target.files[0])}
                     />
@@ -419,11 +440,22 @@ export function PresetEditDialog({
                           className="preset-gif-preview-backdrop"
                           style={{ backgroundImage: `url(${gifPreviewUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                         />
-                        <img 
-                          src={gifPreviewUrl} 
-                          alt="GIF Preview" 
-                          className="preset-gif-preview-image"
-                        />
+                        {editGifFile?.type === 'video/webm' ? (
+                          <video 
+                            src={gifPreviewUrl} 
+                            autoPlay 
+                            loop 
+                            muted 
+                            playsInline
+                            className="preset-gif-preview-image"
+                          />
+                        ) : (
+                          <img 
+                            src={gifPreviewUrl} 
+                            alt="Preview" 
+                            className="preset-gif-preview-image"
+                          />
+                        )}
                         <div className="preset-preview-overlay">
                            <div className="preset-preview-overlay-icon-wrap">
                              <Pencil className="preset-preview-overlay-icon" />
@@ -449,8 +481,8 @@ export function PresetEditDialog({
                       </div>
                     ) : (
                       <div className="upload-dropzone-prompt">
-                        <p>drag & drop preview gif here</p>
-                        <p className="upload-dropzone-sub">or click to browse - .gif only (max 2MB)</p>
+                        <p>drag & drop preview gif or webm here</p>
+                        <p className="upload-dropzone-sub">or click to browse - .gif or .webm only (max 2MB)</p>
                       </div>
                     )}
                   </div>
@@ -458,7 +490,7 @@ export function PresetEditDialog({
               </div>
             </div>
 
-            {/* Details Section */}
+            {/* details section */}
             <div className="settings-info-section">
               <div className="settings-section-header">
                 <h2 className="settings-section-title">details</h2>
