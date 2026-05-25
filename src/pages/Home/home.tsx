@@ -29,6 +29,7 @@ import { formatDate } from '@/lib/utils'
 import { useUserContext } from '@/context/UserContext'
 import { supabase } from '@/lib/supabase'
 
+
 const IconMap: Record<string, any> = {
   LayoutGrid,
   Type,
@@ -49,7 +50,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState('newest')
   const [userFavorites, setUserFavorites] = useState<Set<string>>(new Set())
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 15
+  const itemsPerPage = 12
   const navigate = useNavigate()
   const { user } = useUserContext()
 
@@ -249,7 +250,7 @@ export default function Home() {
                   {paginatedPresets.map((preset) => {
                     const category = categories.find(c => c.id === preset.category)
                     const CategoryIcon = category ? IconMap[category.icon || 'LayoutGrid'] : LayoutGrid
-                    
+                    const previewGif = preset.previewGif ?? ''
                     return (
                       <div 
                         key={preset.id} 
@@ -257,11 +258,21 @@ export default function Home() {
                         onClick={() => handlePresetClick(preset.id)}
                       >
                         <div className="preset-preview">
-                          <img 
-                            src={preset.previewGif} 
-                            alt={preset.name}
-                            loading="lazy"
-                          />
+                          {previewGif.toLowerCase().endsWith('.webm') ? (
+                            <video 
+                              src={preset.previewGif} 
+                              autoPlay 
+                              loop 
+                              muted 
+                              playsInline
+                            />
+                          ) : (
+                            <img 
+                              src={preset.previewGif} 
+                              alt={preset.name}
+                              loading="lazy"
+                            />
+                          )}
                           <div className="preset-download-badge">
                             <Download size={12} />
                             <span>{preset.download_count}</span>

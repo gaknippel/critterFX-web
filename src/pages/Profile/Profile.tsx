@@ -487,7 +487,7 @@ export default function Profile() {
 
   if (isLoading) {
     return (
-      <div className="profile-wrapper" style={{ scrollbarGutter: 'stable' }}>
+      <div className="profile-wrapper">
         <div className="profile-header">
           <Skeleton className="profile-avatar" />
           <div className="profile-header-info">
@@ -512,7 +512,6 @@ export default function Profile() {
   return (
     <div 
       className={`profile-wrapper${isEditingBio ? ' profile-wrapper-editing' : ''}`}
-      style={{ scrollbarGutter: 'stable' }}
     >
       <div className="profile-header">
         <div className="profile-avatar-wrapper">
@@ -714,11 +713,21 @@ export default function Profile() {
                     onClick={() => navigate(`/preset/${preset.id}`)}
                   >
                     <div className="preset-preview">
-                      <img 
-                        src={preset.preview_gif_url} 
-                        alt={preset.name} 
-                        loading="lazy" 
-                      />
+                      {preset.preview_gif_url?.toLowerCase().endsWith('.webm') ? (
+                        <video 
+                          src={preset.preview_gif_url} 
+                          autoPlay 
+                          loop 
+                          muted 
+                          playsInline
+                        />
+                      ) : (
+                        <img 
+                          src={preset.preview_gif_url} 
+                          alt={preset.name} 
+                          loading="lazy" 
+                        />
+                      )}
                       <div className="preset-download-badge">
                         <Download size={12} />
                         <span>{preset.download_count}</span>
@@ -737,7 +746,7 @@ export default function Profile() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="comment-action-btn comment-action-btn-danger"
+                            className="comment-action-btn"
                             onClick={() => handleAskDeletePreset(preset)}
                             title="Delete"
                           >
@@ -851,7 +860,7 @@ export default function Profile() {
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="comment-action-btn comment-action-btn-danger"
+                              className="comment-action-btn"
                               onClick={() => handleDeleteComment(comment.id)}
                               title="Delete"
                             >
@@ -920,11 +929,21 @@ export default function Profile() {
                     onClick={() => navigate(`/preset/${preset.id}`)}
                   >
                     <div className="preset-preview">
-                      <img 
-                        src={preset.preview_gif_url} 
-                        alt={preset.name} 
-                        loading="lazy" 
-                      />
+                      {preset.preview_gif_url?.toLowerCase().endsWith('.webm') ? (
+                        <video 
+                          src={preset.preview_gif_url} 
+                          autoPlay 
+                          loop 
+                          muted 
+                          playsInline
+                        />
+                      ) : (
+                        <img 
+                          src={preset.preview_gif_url} 
+                          alt={preset.name} 
+                          loading="lazy" 
+                        />
+                      )}
                       <div className="preset-download-badge">
                         <Download size={12} />
                         <span>{preset.download_count}</span>

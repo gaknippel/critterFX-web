@@ -27,8 +27,15 @@ import {
   Trash2,
   Pencil,
   FileCode,
-  FileText
+  FileText,
+  AlertTriangle
 } from 'lucide-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { toast } from 'sonner'
 import SplitText from '@/components/SplitText'
 import './Upload.css'
@@ -144,13 +151,13 @@ if (!user) {
       const file = e.dataTransfer.files[0]
       if (!file) return
       
-      if (file.type !== 'image/gif') {
-        toast.error('preview must be a GIF!')
+      if (file.type !== 'image/gif' && file.type !== 'video/webm') {
+        toast.error('preview must be a GIF or WebM!')
         return
       }
 
       if (file.size > 2 * 1024 * 1024) {
-        toast.error('gif preview too large! max size is 2MB.')
+        toast.error('preview too large! max size is 2MB.')
         return
       }
       
@@ -328,7 +335,21 @@ return (
 
             {/* gif dropzone */}
             <div className="settings-field">
-              <Label className="settings-field-label">preview gif</Label>
+              <div className="flex items-center gap-2">
+                <Label className="settings-field-label">preview gif / webm</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="text-orange-500 hover:text-orange-400 transition-colors">
+                        <AlertTriangle className="size-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[200px] text-center">
+                      <p>webms are highly recommended over gifs!</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <div
                 className={`upload-dropzone relative overflow-hidden ${gifDragOver ? 'dragover' : ''} ${gifFile ? 'has-file border-none p-0' : 'p-8'}`}
                 onDrop={handleGifDrop}
@@ -339,13 +360,13 @@ return (
                 <input
                   id="gif-file-input"
                   type="file"
-                  accept="image/gif"
+                  accept="image/gif,video/webm"
                   style={{ display: 'none' }}
                   onChange={(e) => {
                     const file = e.target.files?.[0]
                     if (file) {
                       if (file.size > 2 * 1024 * 1024) {
-                        toast.error('gif preview too large! max size is 2MB.')
+                        toast.error('preview too large! max size is 2MB.')
                         return
                       }
                       setGifFile(file)
@@ -361,11 +382,22 @@ return (
                       style={{ backgroundImage: `url(${gifPreviewUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                     />
                     
-                    <img 
-                      src={gifPreviewUrl} 
-                      alt="GIF Preview" 
-                      className="w-full h-full object-contain relative z-10"
-                    />
+                    {gifFile?.type === 'video/webm' ? (
+                      <video 
+                        src={gifPreviewUrl} 
+                        autoPlay 
+                        loop 
+                        muted 
+                        playsInline
+                        className="w-full h-full object-contain relative z-10"
+                      />
+                    ) : (
+                      <img 
+                        src={gifPreviewUrl} 
+                        alt="Preview" 
+                        className="w-full h-full object-contain relative z-10"
+                      />
+                    )}
 
                     {/* Hover Overlay */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center z-20 backdrop-blur-[2px]">
@@ -396,8 +428,8 @@ return (
                   </div>
                 ) : (
                   <div className="upload-dropzone-prompt">
-                    <p>drag & drop preview gif here</p>
-                    <p className="upload-dropzone-sub">or click to browse — .gif only (max 2MB)</p>
+                    <p>drag & drop preview gif or webm here</p>
+                    <p className="upload-dropzone-sub">or click to browse — .gif or .webm only (max 2MB)</p>
                   </div>
                 )}
               </div>

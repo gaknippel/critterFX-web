@@ -524,7 +524,18 @@ const handleDeleteComment = async (commentId: string) => {
             </div>
           </div>
           <div className="preset-preview-large">
-            <img src={preset.previewGif} alt={preset.name} />
+            {preset.previewGif?.toLowerCase().endsWith('.webm') ? (
+              <video 
+                src={preset.previewGif} 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <img src={preset.previewGif} alt={preset.name} />
+            )}
           </div>
 
           <Dialog>

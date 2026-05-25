@@ -69,7 +69,7 @@ export default function About() {
             </div>
             <div className="about-content mt-2 space-y-4 text-sm text-muted-foreground">
               <p>
-                1. <strong>configure settings:</strong> critterFX automatically scans your AE filepath, but if you want to change these filepaths, your are welcome to do so..
+                1. <strong>configure settings:</strong> critterFX automatically scans your AE filepath, but if you want to change these filepaths, your are welcome to do so.
               </p>
               <p>
                 2. <strong>browse presets:</strong> head over to the preset page to find presets shared by the community.
